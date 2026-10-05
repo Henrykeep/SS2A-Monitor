@@ -127,10 +127,11 @@
                 android:textStyle="bold" />
 
             <!-- 弹性拉伸隔片 -->
-            <View
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:orientation="horizontal" />
 
             <!-- 今日请求与Token横向单行紧凑排列 -->
             <LinearLayout
@@ -199,10 +200,11 @@
                 android:textStyle="bold" />
 
             <!-- 弹性拉伸隔片 -->
-            <View
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:orientation="horizontal" />
 
             <!-- 累计请求与Token横向单行紧凑排列 -->
             <LinearLayout
