@@ -362,4 +362,10 @@ public class MainActivity extends Activity {
             btn.setTextColor(Color.parseColor("#CBD5E1"));
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        // 按返回键时保留任务栈退至后台，避免进程被直接 finish，确保后台常驻服务丝滑轮询
+        moveTaskToBack(true);
+    }
 }
