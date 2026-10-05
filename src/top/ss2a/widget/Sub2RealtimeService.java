@@ -110,7 +110,7 @@ public class Sub2RealtimeService extends Service {
                     Sub2WidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
                     Sub2FullStatsWidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
                     if (fresh.isSuccess) {
-                        updateForegroundNotification("今日消费: " + fresh.todayCost + " | 请求: " + fresh.todayRequests + "次 (" + fresh.lastUpdateTime + ")");
+                        updateForegroundNotification("今日: " + fresh.todayCost + " | 累计: " + fresh.totalCost + " | " + fresh.todayRequests + "次 (" + fresh.lastUpdateTime + ")");
                     } else if (fresh.errorMessage != null && !fresh.errorMessage.isEmpty()) {
                         updateForegroundNotification("SS2A 监控: " + fresh.errorMessage);
                     }

@@ -240,10 +240,10 @@ public class MainActivity extends Activity {
             tvPreviewCost.setText(data.todayCost != null ? data.todayCost : "$0.00");
         }
         if (tvPreviewRequests != null) {
-            tvPreviewRequests.setText("请求: " + data.todayRequests + " 次");
+            tvPreviewRequests.setText(data.todayRequests + " 次");
         }
         if (tvPreviewTokens != null) {
-            tvPreviewTokens.setText("Token: " + (data.todayTokens != null ? data.todayTokens : "0"));
+            tvPreviewTokens.setText(data.todayTokens != null ? data.todayTokens : "0");
         }
     }
 
