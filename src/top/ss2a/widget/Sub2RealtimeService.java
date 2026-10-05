@@ -107,8 +107,15 @@ public class Sub2RealtimeService extends Service {
                     WidgetDataStore store = new WidgetDataStore(getApplicationContext());
                     Sub2ApiClient client = new Sub2ApiClient(store);
                     Sub2DashboardData fresh = client.fetchDashboardStats(forced);
+                    java.util.List<Sub2LogItem> logs = client.fetchRecentLogs(4);
+                    if (logs != null && !logs.isEmpty()) {
+                        store.saveRecentLogs(logs);
+                    } else {
+                        logs = store.getCachedRecentLogs();
+                    }
                     Sub2WidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
                     Sub2FullStatsWidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
+                    Sub2LogsWidgetProvider.updateAllWidgets(getApplicationContext(), fresh, logs);
                     if (fresh.isSuccess) {
                         updateForegroundNotification("今日: " + fresh.todayCost + " | 累计: " + fresh.totalCost + " | " + fresh.todayRequests + "次 (" + fresh.lastUpdateTime + ")");
                     } else if (fresh.errorMessage != null && !fresh.errorMessage.isEmpty()) {

@@ -68,6 +68,14 @@ public class Sub2WidgetProvider extends AppWidgetProvider {
                 mgr.partiallyUpdateAppWidget(idsFull, viewsFull);
             }
 
+            ComponentName cnLogs = new ComponentName(context, Sub2LogsWidgetProvider.class);
+            int[] idsLogs = mgr.getAppWidgetIds(cnLogs);
+            if (idsLogs != null && idsLogs.length > 0) {
+                RemoteViews viewsLogs = new RemoteViews(context.getPackageName(), R.layout.widget_sub2_logs);
+                viewsLogs.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
+                mgr.partiallyUpdateAppWidget(idsLogs, viewsLogs);
+            }
+
             Sub2RealtimeService.start(context);
             Sub2RealtimeService.syncNow(context);
             scheduleAutoAlarm(context);

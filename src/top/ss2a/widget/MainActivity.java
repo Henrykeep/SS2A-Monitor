@@ -311,6 +311,7 @@ public class MainActivity extends Activity {
                                     updatePreviewCard(res);
                                     Sub2WidgetProvider.updateAllWidgets(MainActivity.this, res);
                                     Sub2FullStatsWidgetProvider.updateAllWidgets(MainActivity.this, res);
+                                    Sub2LogsWidgetProvider.updateAllWidgets(MainActivity.this, res, dataStore.getCachedRecentLogs());
                                     Sub2RealtimeService.start(MainActivity.this);
                                     Sub2RealtimeService.syncNow(MainActivity.this);
                                 } else {
@@ -384,11 +385,12 @@ StringBuilder sb = new StringBuilder();
                                  sb.append("• 极速模式: 每 ").append(dataStore.getRefreshIntervalSeconds()).append(" 秒自动轮询已就绪！");
                                  tvTestResult.setTextColor(Color.parseColor("#34D399"));
                                  tvTestResult.setText(sb.toString());
-                                 Toast.makeText(MainActivity.this, "连接成功！已同步至桌面小组件", Toast.LENGTH_SHORT).show();
+Toast.makeText(MainActivity.this, "连接成功！已同步至桌面小组件", Toast.LENGTH_SHORT).show();
                                  updatePreviewCard(res);
                                  Sub2WidgetProvider.updateAllWidgets(MainActivity.this, res);
                                  Sub2FullStatsWidgetProvider.updateAllWidgets(MainActivity.this, res);
-                                Sub2RealtimeService.start(MainActivity.this);
+                                 Sub2LogsWidgetProvider.updateAllWidgets(MainActivity.this, res, dataStore.getCachedRecentLogs());
+                                 Sub2RealtimeService.start(MainActivity.this);
                                 Sub2RealtimeService.syncNow(MainActivity.this);
                             } else {
                                 tvTestResult.setTextColor(Color.parseColor("#F87171"));
@@ -432,6 +434,7 @@ StringBuilder sb = new StringBuilder();
         updatePreviewCard(cached);
         Sub2WidgetProvider.updateAllWidgets(this, cached);
         Sub2FullStatsWidgetProvider.updateAllWidgets(this, cached);
+        Sub2LogsWidgetProvider.updateAllWidgets(this, cached, dataStore.getCachedRecentLogs());
         Sub2RealtimeService.start(this);
         Sub2RealtimeService.syncNow(this);
         Sub2WidgetProvider.scheduleAutoAlarm(this);

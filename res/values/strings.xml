@@ -3,6 +3,8 @@
     <string name="app_name">SS2A 监控</string>
     <string name="widget_desc">Sub2API 今日消耗极客秒级实时监控小组件</string>
     <string name="widget_full_desc">SS2A 全量用量大看板，聚合累计总额、今日消耗、Tokens吞吐与实时RPM/TPM</string>
+    <string name="widget_logs_desc">SS2A 最近调用明细小组件，实时呈现最近的模型调用记录、耗时与消耗</string>
     <string name="widget_title_4x2">SS2A · 今日消耗监控 (4x2)</string>
     <string name="widget_title_full">SS2A · 全部用量看板 (4x3)</string>
+    <string name="widget_title_logs">SS2A · 最近调用明细 (4x3)</string>
 </resources>

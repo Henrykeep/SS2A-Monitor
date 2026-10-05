@@ -1,5 +1,6 @@
 package top.ss2a.widget;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -10,7 +11,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class Sub2ApiClient {
@@ -347,6 +350,78 @@ public class Sub2ApiClient {
         if (t >= 1000000L) return String.format(Locale.US, "%.2fM", t / 1000000.0);
         if (t >= 1000L) return String.format(Locale.US, "%.1fK", t / 1000.0);
         return String.valueOf(t);
+    }
+
+    public List<Sub2LogItem> fetchRecentLogs(int limit) {
+        List<Sub2LogItem> list = new ArrayList<>();
+        String baseUrl = cleanBaseUrl(dataStore.getServerUrl());
+        String token = dataStore.getAdminToken();
+        if (token == null || token.isEmpty()) return list;
+
+        String endpointUrl = baseUrl + "/api/v1/usage?page=1&page_size=" + Math.max(limit, 5);
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL(endpointUrl);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(8000);
+            conn.setReadTimeout(8000);
+            conn.setRequestProperty("Accept", "application/json");
+
+            String rawToken = token.trim();
+            if (rawToken.startsWith("Bearer ")) {
+                rawToken = rawToken.substring(7).trim();
+            }
+            conn.setRequestProperty("Authorization", "Bearer " + rawToken);
+
+            int code = conn.getResponseCode();
+            if (code >= 200 && code < 300) {
+                String body = readStream(conn.getInputStream());
+                JSONObject root = new JSONObject(body);
+                JSONObject dataObj = root.optJSONObject("data");
+                JSONArray items = dataObj != null ? dataObj.optJSONArray("items") : null;
+                if (items == null && root.has("items")) items = root.optJSONArray("items");
+
+                if (items != null) {
+                    for (int i = 0; i < items.length() && list.size() < limit; i++) {
+                        JSONObject itemObj = items.optJSONObject(i);
+                        if (itemObj == null) continue;
+
+                        long id = itemObj.optLong("id", 0);
+                        String model = itemObj.optString("model", "未知模型");
+                        String createdAt = itemObj.optString("created_at", "");
+                        double cost = itemObj.optDouble("actual_cost", itemObj.optDouble("total_cost", 0.0));
+                        long durationMs = itemObj.optLong("duration_ms", 0);
+                        long inTokens = itemObj.optLong("input_tokens", 0);
+                        long outTokens = itemObj.optLong("output_tokens", 0);
+                        long cacheTokens = itemObj.optLong("cache_read_tokens", 0);
+
+                        String timeStr = formatLogTime(createdAt);
+                        String costStr = "$" + new DecimalFormat("0.0000").format(cost);
+                        String durationStr = formatDuration(durationMs);
+                        String tokensStr = formatTokens(inTokens + outTokens + cacheTokens);
+
+                        list.add(new Sub2LogItem(id, model, timeStr, costStr, durationStr, tokensStr));
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+        return list;
+    }
+
+    private String formatLogTime(String isoTime) {
+        if (isoTime == null || isoTime.isEmpty()) return "--:--";
+        try {
+            // ISO 格式: 2026-10-05T19:49:41.625551+08:00
+            int tIndex = isoTime.indexOf('T');
+            if (tIndex >= 0 && isoTime.length() >= tIndex + 9) {
+                return isoTime.substring(tIndex + 1, tIndex + 9);
+            }
+        } catch (Exception ignored) {}
+        return isoTime;
     }
 
     private String formatDuration(double ms) {

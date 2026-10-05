@@ -81,6 +81,25 @@ public class WidgetDataStore {
             .apply();
     }
 
+    public void saveRecentLogs(java.util.List<Sub2LogItem> logs) {
+        org.json.JSONArray array = new org.json.JSONArray();
+        if (logs != null) {
+            for (Sub2LogItem item : logs) {
+                try {
+                    org.json.JSONObject obj = new org.json.JSONObject();
+                    obj.put("id", item.id);
+                    obj.put("model", item.model);
+                    obj.put("time", item.time);
+                    obj.put("cost", item.cost);
+                    obj.put("duration", item.duration);
+                    obj.put("tokens", item.tokensSummary);
+                    array.put(obj);
+                } catch (Exception ignored) {}
+            }
+        }
+        prefs.edit().putString("cache_recent_logs", array.toString()).apply();
+    }
+
     public Sub2DashboardData getCachedStats() {
         Sub2DashboardData data = new Sub2DashboardData();
         data.modeTitle = prefs.getString("cache_mode_title", "全站监控");
@@ -106,5 +125,25 @@ public class WidgetDataStore {
         data.isSuccess = prefs.getBoolean("cache_success", true);
         data.errorMessage = prefs.getString("cache_error", "");
         return data;
+    }
+
+    public java.util.List<Sub2LogItem> getCachedRecentLogs() {
+        java.util.List<Sub2LogItem> list = new java.util.ArrayList<>();
+        String json = prefs.getString("cache_recent_logs", "[]");
+        try {
+            org.json.JSONArray array = new org.json.JSONArray(json);
+            for (int i = 0; i < array.length(); i++) {
+                org.json.JSONObject obj = array.getJSONObject(i);
+                Sub2LogItem item = new Sub2LogItem();
+                item.id = obj.optLong("id", 0);
+                item.model = obj.optString("model", "未知模型");
+                item.time = obj.optString("time", "--:--");
+                item.cost = obj.optString("cost", "$0.00");
+                item.duration = obj.optString("duration", "0s");
+                item.tokensSummary = obj.optString("tokens", "0 Tokens");
+                list.add(item);
+            }
+        } catch (Exception ignored) {}
+        return list;
     }
 }
