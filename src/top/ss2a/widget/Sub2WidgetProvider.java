@@ -56,7 +56,7 @@ public class Sub2WidgetProvider extends AppWidgetProvider {
             ComponentName cn = new ComponentName(context, Sub2WidgetProvider.class);
             int[] ids = mgr.getAppWidgetIds(cn);
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_sub2_4x2);
-            views.setTextViewText(R.id.tv_update_time, "正在刷新...");
+            views.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
             mgr.partiallyUpdateAppWidget(ids, views);
             
             Sub2RealtimeService.syncNow(context);

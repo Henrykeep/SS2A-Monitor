@@ -2,81 +2,114 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#11111B"
+    android:background="#0F0F17"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="18dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SS2A 运营监控"
-            android:textColor="#CDD6F4"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Sub2API 桌面小组件配置中心 (实时模式)"
-            android:textColor="#A6ADC8"
-            android:textSize="13sp" />
-
+        <!-- 顶部 Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="#1E1E2E"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="8dp"
+            android:paddingBottom="4dp">
 
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SS2A MONITOR"
+                    android:textColor="#CDD6F4"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Sub2API 桌面组件配置中心 · v1.3.0"
+                    android:textColor="#7F849C"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_tag"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="4dp"
+                android:text="⚡ 极速实时就绪"
+                android:textColor="#A6E3A1"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 核心配置大卡片 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_main_card"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <!-- 站点域名 -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sub2API 站点域名"
                 android:textColor="#BAC2DE"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/et_server_url"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="46dp"
                 android:layout_marginTop="6dp"
-                android:background="#313244"
+                android:background="@drawable/bg_edittext"
                 android:hint="https://ss2a.top"
                 android:inputType="textUri"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
                 android:text="https://ss2a.top"
                 android:textColor="#CDD6F4"
                 android:textColorHint="#585B70"
                 android:textSize="14sp" />
 
+            <!-- 管理员一键免抓包登录 -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="管理员一键登录 (推荐，自动续期)"
                 android:textColor="#BAC2DE"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/et_admin_account"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="46dp"
                 android:layout_marginTop="6dp"
-                android:background="#313244"
+                android:background="@drawable/bg_edittext"
                 android:hint="管理员账号 / 邮箱"
                 android:inputType="text"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
                 android:textColor="#CDD6F4"
                 android:textColorHint="#585B70"
                 android:textSize="14sp" />
@@ -84,13 +117,13 @@
             <EditText
                 android:id="@+id/et_admin_password"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="46dp"
                 android:layout_marginTop="8dp"
-                android:background="#313244"
+                android:background="@drawable/bg_edittext"
                 android:hint="管理员密码"
                 android:inputType="textPassword"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
                 android:textColor="#CDD6F4"
                 android:textColorHint="#585B70"
                 android:textSize="14sp" />
@@ -100,11 +133,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
                 android:layout_marginTop="10dp"
-                android:background="#CBA6F7"
+                android:background="@drawable/bg_btn_primary"
                 android:text="一键登录并获取 Token"
                 android:textColor="#11111B"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
+            <!-- 手动 Token -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -116,45 +151,102 @@
             <EditText
                 android:id="@+id/et_admin_token"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="46dp"
                 android:layout_marginTop="6dp"
-                android:background="#313244"
+                android:background="@drawable/bg_edittext"
                 android:hint="登录后自动填入，也可手动粘贴"
                 android:inputType="textPassword"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
                 android:textColor="#CDD6F4"
                 android:textColorHint="#585B70"
                 android:textSize="13sp" />
 
+            <!-- 实时刷新频率 -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="实时刷新频率 (秒，亮屏时执行)"
+                android:text="实时刷新频率 (秒，亮屏时轮询)"
                 android:textColor="#BAC2DE"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/et_refresh_interval"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="46dp"
                 android:layout_marginTop="6dp"
-                android:background="#313244"
+                android:background="@drawable/bg_edittext"
                 android:hint="默认 30 秒 (支持 5 ~ 300 秒)"
                 android:inputType="number"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
                 android:text="30"
                 android:textColor="#CDD6F4"
                 android:textColorHint="#585B70"
                 android:textSize="14sp" />
 
+            <!-- 频率快捷标签 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_chip_10s"
+                    android:layout_width="0dp"
+                    android:layout_height="34dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_badge_btn"
+                    android:text="10秒"
+                    android:textColor="#BAC2DE"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_chip_30s"
+                    android:layout_width="0dp"
+                    android:layout_height="34dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_badge_btn"
+                    android:text="30秒"
+                    android:textColor="#A6E3A1"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btn_chip_60s"
+                    android:layout_width="0dp"
+                    android:layout_height="34dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_badge_btn"
+                    android:text="1分钟"
+                    android:textColor="#BAC2DE"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_chip_300s"
+                    android:layout_width="0dp"
+                    android:layout_height="34dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_badge_btn"
+                    android:text="5分钟"
+                    android:textColor="#BAC2DE"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- 操作按键：测试连接 + 保存同步 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
                 <Button
@@ -163,19 +255,21 @@
                     android:layout_height="46dp"
                     android:layout_marginEnd="6dp"
                     android:layout_weight="1"
-                    android:background="#45475A"
+                    android:background="@drawable/bg_btn_secondary"
                     android:text="测试连接"
-                    android:textColor="#CDD6F4" />
+                    android:textColor="#CDD6F4"
+                    android:textSize="14sp" />
 
                 <Button
                     android:id="@+id/btn_save_config"
                     android:layout_width="0dp"
                     android:layout_height="46dp"
                     android:layout_marginStart="6dp"
-                    android:layout_weight="1"
-                    android:background="#89B4FA"
-                    android:text="保存并启动实时监控"
+                    android:layout_weight="1.2"
+                    android:background="@drawable/bg_btn_primary"
+                    android:text="保存并启动监控"
                     android:textColor="#11111B"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -184,31 +278,37 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="14dp"
                 android:visibility="gone" />
 
+            <!-- 极客终端测试输出卡片 -->
             <TextView
                 android:id="@+id/tv_test_result"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:textSize="13sp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_terminal_card"
+                android:padding="12dp"
+                android:lineSpacingExtra="3dp"
+                android:textColor="#A6E3A1"
+                android:textSize="12sp"
                 android:visibility="gone" />
         </LinearLayout>
 
+        <!-- 底部添加引导卡片 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="#181825"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_main_card"
             android:orientation="vertical"
-            android:padding="14dp">
+            android:padding="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="⚡ 极速实时刷新说明"
-                android:textColor="#A6E3A1"
+                android:text="💡 如何添加到桌面？"
+                android:textColor="#F9E2AF"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
@@ -216,12 +316,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="• 亮屏期间：按照设定的秒数（默认30秒，最快5秒）极速轮询实时刷新；
-• 解锁亮屏：立即无感拉取最新数据；
-• 息屏待机：智能降频以节省电池电量；
-• 无需手动点击，后台静默保持最新！"
-                android:textColor="#A6ADC8"
+                android:lineSpacingExtra="3dp"
+                android:text="1. 返回手机主屏幕，长按空白处；
+2. 在弹出菜单中选择【微件】或【小组件】；
+3. 找到【SS2A 监控】，长按拖到桌面即可享受极客大盘！"
+                android:textColor="#9399B2"
                 android:textSize="12sp" />
         </LinearLayout>
+
     </LinearLayout>
 </ScrollView>

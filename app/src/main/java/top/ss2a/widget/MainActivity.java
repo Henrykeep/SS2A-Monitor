@@ -71,7 +71,9 @@ public class MainActivity extends Activity {
             }
         });
 
-        Sub2RealtimeService.start(this);
+        
+        setupIntervalChips();
+Sub2RealtimeService.start(this);
         Sub2WidgetProvider.scheduleAutoAlarm(this);
         Sub2JobService.schedulePeriodicJob(this);
     }
@@ -256,4 +258,26 @@ public class MainActivity extends Activity {
         Sub2WidgetProvider.scheduleAutoAlarm(this);
         Sub2JobService.schedulePeriodicJob(this);
     }
+
+    private void setupIntervalChips() {
+        Button btn10s = findViewById(R.id.btn_chip_10s);
+        Button btn30s = findViewById(R.id.btn_chip_30s);
+        Button btn60s = findViewById(R.id.btn_chip_60s);
+        Button btn300s = findViewById(R.id.btn_chip_300s);
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int id = v.getId();
+                if (id == R.id.btn_chip_10s) etRefreshInterval.setText("10");
+                else if (id == R.id.btn_chip_30s) etRefreshInterval.setText("30");
+                else if (id == R.id.btn_chip_60s) etRefreshInterval.setText("60");
+                else if (id == R.id.btn_chip_300s) etRefreshInterval.setText("300");
+            }
+        };
+        if (btn10s != null) btn10s.setOnClickListener(listener);
+        if (btn30s != null) btn30s.setOnClickListener(listener);
+        if (btn60s != null) btn60s.setOnClickListener(listener);
+        if (btn300s != null) btn300s.setOnClickListener(listener);
+    }
+
 }
