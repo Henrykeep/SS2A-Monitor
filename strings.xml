@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SS2A 监控</string>
+    <string name="widget_4x2_description">实时显示 Sub2API 中转站今日消耗与调用量</string>
+</resources>

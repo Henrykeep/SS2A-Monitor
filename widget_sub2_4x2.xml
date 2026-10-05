@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#181825"
+    android:orientation="vertical"
+    android:padding="14dp">
+
+    <!-- 顶栏：状态指示灯、站点名、更新时间、刷新按钮、设置按钮 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv_status_dot"
+            android:layout_width="9dp"
+            android:layout_height="9dp"
+            android:layout_marginEnd="6dp"
+            android:src="@android:drawable/presence_online" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="SS2A·TOP 大盘"
+            android:textColor="#CBA6F7"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_update_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="--:--"
+            android:textColor="#9399B2"
+            android:textSize="11sp" />
+
+        <ImageButton
+            android:id="@+id/btn_refresh"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="刷新"
+            android:src="@android:drawable/ic_popup_sync" />
+
+        <ImageButton
+            android:id="@+id/btn_settings"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="4dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="设置"
+            android:src="@android:drawable/ic_menu_preferences" />
+    </LinearLayout>
+
+    <!-- 错误或预警提示行 -->
+    <TextView
+        android:id="@+id/tv_error_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="#F38BA8"
+        android:textSize="10sp"
+        android:visibility="gone" />
+
+    <!-- 核心指标数据展示区 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="4dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- 指标 1：今日总消耗（荧光绿高亮） -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.2"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="今日消耗"
+                android:textColor="#A6ADC8"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tv_today_cost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="$0.00"
+                android:textColor="#A6E3A1"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 指标 2：今日总调用次数（科技蓝） -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="API 调用"
+                android:textColor="#A6ADC8"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tv_today_requests"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="0 次"
+                android:textColor="#89B4FA"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 指标 3：今日 Token 吞吐量（珊瑚橙） -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Token 总量"
+                android:textColor="#A6ADC8"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tv_today_tokens"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="0 Tokens"
+                android:textColor="#FAB387"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 底栏：直达后台引导 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="Sub2API 管理面板 ↗"
+        android:textColor="#585B70"
+        android:textSize="10sp" />
+</LinearLayout>

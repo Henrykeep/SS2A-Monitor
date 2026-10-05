@@ -1,0 +1,19 @@
+# Gradle & Build Output
+.gradle/
+build/
+bin/
+gen/
+*.apk
+*.aab
+*.dex
+*.class
+
+# IDE & System
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
+.backup/
+objects/
