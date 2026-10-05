@@ -19,7 +19,15 @@ public class Sub2JobService extends JobService {
                     WidgetDataStore store = new WidgetDataStore(getApplicationContext());
                     Sub2ApiClient client = new Sub2ApiClient(store);
                     Sub2DashboardData fresh = client.fetchDashboardStats(true);
+                    java.util.List<Sub2LogItem> logs = client.fetchRecentLogs(4);
+                    if (logs != null && !logs.isEmpty()) {
+                        store.saveRecentLogs(logs);
+                    } else {
+                        logs = store.getCachedRecentLogs();
+                    }
                     Sub2WidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
+                    Sub2FullStatsWidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
+                    Sub2LogsWidgetProvider.updateAllWidgets(getApplicationContext(), fresh, logs);
                 } catch (Exception ignored) {
                 } finally {
                     jobFinished(params, false);

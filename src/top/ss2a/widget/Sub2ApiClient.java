@@ -401,7 +401,36 @@ public class Sub2ApiClient {
                         String durationStr = formatDuration(durationMs);
                         String tokensStr = formatTokens(inTokens + outTokens + cacheTokens);
 
-                        list.add(new Sub2LogItem(id, model, timeStr, costStr, durationStr, tokensStr));
+                        // 忠实提取真实上游渠道账户 (如 gugugaga, K 等)，严格反映客观真实数据，绝不捏造
+                        String accountStr = "";
+                        if (itemObj.has("account_name") && !itemObj.optString("account_name").trim().isEmpty()) {
+                            accountStr = itemObj.optString("account_name").trim();
+                        } else if (itemObj.has("channel_name") && !itemObj.optString("channel_name").trim().isEmpty()) {
+                            accountStr = itemObj.optString("channel_name").trim();
+                        } else if (itemObj.has("account")) {
+                            JSONObject accObj = itemObj.optJSONObject("account");
+                            if (accObj != null) {
+                                accountStr = accObj.optString("name", accObj.optString("title", "")).trim();
+                            } else {
+                                accountStr = itemObj.optString("account", "").trim();
+                            }
+                        } else if (itemObj.has("channel")) {
+                            JSONObject chObj = itemObj.optJSONObject("channel");
+                            if (chObj != null) {
+                                accountStr = chObj.optString("name", "").trim();
+                            } else {
+                                accountStr = itemObj.optString("channel", "").trim();
+                            }
+                        } else if (itemObj.has("upstream_name")) {
+                            accountStr = itemObj.optString("upstream_name", "").trim();
+                        }
+
+                        Sub2LogItem logItem = new Sub2LogItem(id, model, timeStr, costStr, durationStr, tokensStr);
+                        logItem.account = accountStr;
+                        logItem.rawCost = cost;
+                        logItem.durationMs = durationMs;
+                        logItem.hasCacheHit = (cacheTokens > 0);
+                        list.add(logItem);
                     }
                 }
             }

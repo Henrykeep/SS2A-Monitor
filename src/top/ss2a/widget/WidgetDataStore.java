@@ -2,6 +2,10 @@ package top.ss2a.widget;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WidgetDataStore {
     private final SharedPreferences prefs;
@@ -45,6 +49,15 @@ public class WidgetDataStore {
         prefs.edit().putString("admin_password", password != null ? password : "").apply();
     }
 
+    // 真正展示的上游账户名，例如 gugugaga, K 等
+    public String getTargetAccountName() {
+        return prefs.getString("target_account_name", "gugugaga");
+    }
+
+    public void setTargetAccountName(String name) {
+        prefs.edit().putString("target_account_name", name != null ? name.trim() : "").apply();
+    }
+
     public int getRefreshIntervalSeconds() {
         return prefs.getInt("refresh_interval", 30);
     }
@@ -81,18 +94,23 @@ public class WidgetDataStore {
             .apply();
     }
 
-    public void saveRecentLogs(java.util.List<Sub2LogItem> logs) {
-        org.json.JSONArray array = new org.json.JSONArray();
+    public void saveRecentLogs(List<Sub2LogItem> logs) {
+        JSONArray array = new JSONArray();
         if (logs != null) {
             for (Sub2LogItem item : logs) {
                 try {
-                    org.json.JSONObject obj = new org.json.JSONObject();
+                    JSONObject obj = new JSONObject();
                     obj.put("id", item.id);
                     obj.put("model", item.model);
                     obj.put("time", item.time);
                     obj.put("cost", item.cost);
                     obj.put("duration", item.duration);
                     obj.put("tokens", item.tokensSummary);
+                    obj.put("account", item.account != null ? item.account : "");
+                    obj.put("display_model", item.displayModel != null ? item.displayModel : item.model);
+                    obj.put("raw_cost", item.rawCost);
+                    obj.put("duration_ms", item.durationMs);
+                    obj.put("cache_hit", item.hasCacheHit);
                     array.put(obj);
                 } catch (Exception ignored) {}
             }
@@ -127,13 +145,13 @@ public class WidgetDataStore {
         return data;
     }
 
-    public java.util.List<Sub2LogItem> getCachedRecentLogs() {
-        java.util.List<Sub2LogItem> list = new java.util.ArrayList<>();
+    public List<Sub2LogItem> getCachedRecentLogs() {
+        List<Sub2LogItem> list = new ArrayList<>();
         String json = prefs.getString("cache_recent_logs", "[]");
         try {
-            org.json.JSONArray array = new org.json.JSONArray(json);
+            JSONArray array = new JSONArray(json);
             for (int i = 0; i < array.length(); i++) {
-                org.json.JSONObject obj = array.getJSONObject(i);
+                JSONObject obj = array.getJSONObject(i);
                 Sub2LogItem item = new Sub2LogItem();
                 item.id = obj.optLong("id", 0);
                 item.model = obj.optString("model", "未知模型");
@@ -141,6 +159,11 @@ public class WidgetDataStore {
                 item.cost = obj.optString("cost", "$0.00");
                 item.duration = obj.optString("duration", "0s");
                 item.tokensSummary = obj.optString("tokens", "0 Tokens");
+                item.account = obj.optString("account", "");
+                item.displayModel = obj.optString("display_model", Sub2LogItem.cleanModelName(item.model));
+                item.rawCost = obj.optDouble("raw_cost", 0.0);
+                item.durationMs = obj.optLong("duration_ms", 0);
+                item.hasCacheHit = obj.optBoolean("cache_hit", false);
                 list.add(item);
             }
         } catch (Exception ignored) {}

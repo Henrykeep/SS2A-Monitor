@@ -50,14 +50,31 @@ public class Sub2WidgetProvider extends AppWidgetProvider {
         super.onReceive(context, intent);
         String action = intent != null ? intent.getAction() : null;
         if (action == null) return;
-
         if (ACTION_MANUAL_REFRESH.equals(action)) {
             AppWidgetManager mgr = AppWidgetManager.getInstance(context);
             ComponentName cn = new ComponentName(context, Sub2WidgetProvider.class);
             int[] ids = mgr.getAppWidgetIds(cn);
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_sub2_4x2);
-            views.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
-            mgr.partiallyUpdateAppWidget(ids, views);
+            if (ids != null && ids.length > 0) {
+                RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_sub2_4x2);
+                views.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
+                mgr.partiallyUpdateAppWidget(ids, views);
+            }
+
+            ComponentName cnFull = new ComponentName(context, Sub2FullStatsWidgetProvider.class);
+            int[] idsFull = mgr.getAppWidgetIds(cnFull);
+            if (idsFull != null && idsFull.length > 0) {
+                RemoteViews viewsFull = new RemoteViews(context.getPackageName(), R.layout.widget_sub2_full_stats);
+                viewsFull.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
+                mgr.partiallyUpdateAppWidget(idsFull, viewsFull);
+            }
+
+            ComponentName cnLogs = new ComponentName(context, Sub2LogsWidgetProvider.class);
+            int[] idsLogs = mgr.getAppWidgetIds(cnLogs);
+            if (idsLogs != null && idsLogs.length > 0) {
+                RemoteViews viewsLogs = new RemoteViews(context.getPackageName(), R.layout.widget_sub2_logs);
+                viewsLogs.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
+                mgr.partiallyUpdateAppWidget(idsLogs, viewsLogs);
+            }
 
             Sub2RealtimeService.start(context);
             Sub2RealtimeService.syncNow(context);

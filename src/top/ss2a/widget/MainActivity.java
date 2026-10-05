@@ -428,6 +428,7 @@ Toast.makeText(MainActivity.this, "连接成功！已同步至桌面小组件", 
         dataStore.setAdminPassword(password);
         dataStore.setAdminToken(token);
 
+
         Toast.makeText(this, "配置已保存！极速实时同步服务已启动", Toast.LENGTH_SHORT).show();
 
         Sub2DashboardData cached = dataStore.getCachedStats();

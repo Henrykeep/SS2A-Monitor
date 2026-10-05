@@ -227,7 +227,8 @@ class Sub2ApiClient(private val dataStore: WidgetDataStore) {
             else -> tokens.toString()
         }
     }
-}ng.format(Locale.US, "%.2fM", tokens / 1_000_000.0)
+}
+}.format(Locale.US, "%.2fM", tokens / 1_000_000.0)
             tokens >= 1_000 -> String.format(Locale.US, "%.1fK", tokens / 1_000.0)
             else -> tokens.toString()
         }

@@ -54,6 +54,19 @@
                 android:resource="@xml/widget_sub2_4x2_info" />
         </receiver>
 
+        <!-- 第三个小组件：账户与日志监控小组件 -->
+        <receiver
+            android:name="top.ss2a.widget.Sub2LogsWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="top.ss2a.widget.LOGS_MANUAL_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_sub2_logs_info" />
+        </receiver>
+
         <!-- 秒级极速实时常驻前台服务 -->
         <service
             android:name="top.ss2a.widget.Sub2RealtimeService"
