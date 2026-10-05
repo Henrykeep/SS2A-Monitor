@@ -25,6 +25,7 @@
             android:layout_gravity="center_vertical"
             android:src="@drawable/ic_dot_status" />
 
+        <!-- 标题：严格 wrap_content 保证「调用明细」四个大字 100% 完整显示，严禁任何省略号！ -->
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
@@ -37,13 +38,13 @@
             android:textSize="12.5sp"
             android:textStyle="bold" />
 
-        <!-- 弹性留白垫片 -->
+        <!-- 弹性留白垫片：使用 RemoteViews 白名单严格支持的 LinearLayout -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <!-- 顶栏当前上游账户胶囊 -->
+        <!-- 顶栏账户胶囊：绝对居中 -->
         <TextView
             android:id="@+id/tv_top_account"
             android:layout_width="wrap_content"
@@ -60,127 +61,69 @@
             android:paddingEnd="6dp"
             android:paddingTop="0dp"
             android:paddingBottom="0dp"
-            android:text="gugugaga"
-            android:textColor="#60A5FA"
-            android:textSize="8.5sp"
+            android:text="--"
+            android:textColor="#38BDF8"
+            android:textSize="9sp"
             android:textStyle="bold" />
 
+        <!-- 时间戳胶囊 -->
         <TextView
             android:id="@+id/tv_update_time"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="19dp"
             android:layout_marginEnd="5dp"
             android:layout_gravity="center_vertical"
+            android:background="@drawable/bg_widget_tag"
+            android:gravity="center"
             android:includeFontPadding="false"
-            android:singleLine="true"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
             android:text="--:--"
-            android:textColor="#64748B"
+            android:textColor="#94A3B8"
             android:textSize="9sp" />
 
-        <ImageView
+        <ImageButton
             android:id="@+id/btn_refresh"
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:layout_marginEnd="5dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/bg_widget_btn"
+            android:contentDescription="立即刷新"
+            android:padding="4dp"
             android:src="@drawable/ic_refresh" />
 
-        <ImageView
+        <ImageButton
             android:id="@+id/btn_settings"
-            android:layout_width="14dp"
-            android:layout_height="14dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="4dp"
             android:layout_gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/bg_widget_btn"
+            android:contentDescription="配置设置"
+            android:padding="4dp"
             android:src="@drawable/ic_settings" />
     </LinearLayout>
 
-    <!-- 错误异常提示条 (默认隐藏) -->
+    <!-- 异常提示条 -->
     <TextView
         android:id="@+id/tv_error_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="#20EF4444"
-        android:gravity="center"
-        android:padding="2dp"
-        android:text="连接受阻，点击重试"
-        android:textColor="#FCA5A5"
+        android:layout_marginTop="1dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="#F87171"
         android:textSize="9sp"
         android:visibility="gone" />
 
-    <!-- 2. 专业微型表头栏 (1:1 绝对卡位对齐下方各列) -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="15dp"
-        android:layout_marginTop="2dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp">
-
-        <!-- 表头：模型 -->
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:includeFontPadding="false"
-            android:text="模型"
-            android:textColor="#64748B"
-            android:textSize="8sp" />
-
-        <!-- 表头：渠道 (45dp, center) -->
-        <TextView
-            android:layout_width="45dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
-            android:layout_marginEnd="3dp"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:text="渠道"
-            android:textColor="#64748B"
-            android:textSize="8sp" />
-
-        <!-- 表头：首字 (38dp, end, 天蓝) -->
-        <TextView
-            android:layout_width="38dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="3dp"
-            android:gravity="end"
-            android:includeFontPadding="false"
-            android:text="首字"
-            android:textColor="#38BDF8"
-            android:textSize="8sp" />
-
-        <!-- 表头：总耗 (38dp, end, 翡翠绿) -->
-        <TextView
-            android:layout_width="38dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="3dp"
-            android:gravity="end"
-            android:includeFontPadding="false"
-            android:text="总耗"
-            android:textColor="#34D399"
-            android:textSize="8sp" />
-
-        <!-- 表头：时间 (40dp, end, 冷灰) -->
-        <TextView
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:includeFontPadding="false"
-            android:text="时间"
-            android:textColor="#64748B"
-            android:textSize="8sp" />
-    </LinearLayout>
-
-    <!-- 3. 最近 4 条性能调用记录列表区域 (等宽 monospace 严密栅格) -->
+    <!-- 2. 最近使用记录列表区域 (4条紧凑极客卡片，严格固定列宽网格对齐) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="3dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -197,6 +140,7 @@
             android:paddingStart="5dp"
             android:paddingEnd="5dp">
 
+            <!-- 列 1：模型名称 (左对齐，弹性填补剩余宽度，拥有充裕的 140dp+ 空间，100% 完整显示不截断！) -->
             <TextView
                 android:id="@+id/tv_log_model_1"
                 android:layout_width="0dp"
@@ -206,11 +150,12 @@
                 android:includeFontPadding="false"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="暂无记录"
+                android:text="暂无调用记录"
                 android:textColor="#FFFFFF"
                 android:textSize="10sp"
                 android:textStyle="bold" />
 
+            <!-- 列 2：上游账户胶囊 (严格锁定 45dp 固定宽度，X坐标垂直绝对一条线) -->
             <TextView
                 android:id="@+id/tv_log_account_1"
                 android:layout_width="45dp"
@@ -231,47 +176,41 @@
                 android:textColor="#93C5FD"
                 android:textSize="7.5sp" />
 
+            <!-- 列 3：Tokens 吞吐 (严格锁定 31dp 固定宽度，全行右对齐) -->
             <TextView
                 android:id="@+id/tv_log_first_token_1"
-                android:layout_width="38dp"
+                android:layout_width="31dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="3dp"
-                android:fontFamily="monospace"
-                android:typeface="monospace"
                 android:gravity="end"
                 android:includeFontPadding="false"
-                android:singleLine="true"
-                android:text="0s"
-                android:textColor="#38BDF8"
-                android:textSize="9sp" />
+                android:layout_marginEnd="3dp"
+                android:text="--"
+                android:textColor="#FDBA74"
+                android:textSize="8.5sp" />
 
+            <!-- 列 4：消费金额 (严格锁定 39dp 固定宽度，全行右对齐) -->
             <TextView
                 android:id="@+id/tv_log_duration_1"
-                android:layout_width="38dp"
+                android:layout_width="39dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="3dp"
-                android:fontFamily="monospace"
-                android:typeface="monospace"
                 android:gravity="end"
                 android:includeFontPadding="false"
-                android:singleLine="true"
+                android:layout_marginEnd="3dp"
                 android:text="0s"
                 android:textColor="#34D399"
-                android:textSize="9sp"
+                android:textSize="9.5sp"
                 android:textStyle="bold" />
 
+            <!-- 列 5：时间戳 (严格锁定 40dp 固定宽度，带秒数 HH:mm:ss 完整显示，全行右对齐) -->
             <TextView
                 android:id="@+id/tv_log_time_1"
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:fontFamily="monospace"
-                android:typeface="monospace"
                 android:gravity="end"
                 android:includeFontPadding="false"
-                android:singleLine="true"
                 android:text="--:--:--"
                 android:textColor="#94A3B8"
                 android:textSize="8sp" />
@@ -300,10 +239,9 @@
                 android:includeFontPadding="false"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="暂无记录"
-                android:textColor="#FFFFFF"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+                android:text="--"
+                android:textColor="#CBD5E1"
+                android:textSize="10sp" />
 
             <TextView
                 android:id="@+id/tv_log_account_2"
@@ -327,33 +265,27 @@
 
             <TextView
                 android:id="@+id/tv_log_first_token_2"
-                android:layout_width="38dp"
+                android:layout_width="31dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="3dp"
-                android:fontFamily="monospace"
-                android:typeface="monospace"
                 android:gravity="end"
                 android:includeFontPadding="false"
-                android:singleLine="true"
-                android:text="0s"
-                android:textColor="#38BDF8"
-                android:textSize="9sp" />
+                android:layout_marginEnd="3dp"
+                android:text="--"
+                android:textColor="#FDBA74"
+                android:textSize="8.5sp" />
 
             <TextView
                 android:id="@+id/tv_log_duration_2"
-                android:layout_width="38dp"
+                android:layout_width="39dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="3dp"
-                android:fontFamily="monospace"
-                android:typeface="monospace"
                 android:gravity="end"
                 android:includeFontPadding="false"
-                android:singleLine="true"
+                android:layout_marginEnd="3dp"
                 android:text="0s"
                 android:textColor="#34D399"
-                android:textSize="9sp"
+                android:textSize="9.5sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -361,11 +293,8 @@
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:fontFamily="monospace"
-                android:typeface="monospace"
                 android:gravity="end"
                 android:includeFontPadding="false"
-                android:singleLine="true"
                 android:text="--:--:--"
                 android:textColor="#94A3B8"
                 android:textSize="8sp" />
@@ -394,10 +323,9 @@
                 android:includeFontPadding="false"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="暂无记录"
-                android:textColor="#FFFFFF"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+                android:text="--"
+                android:textColor="#CBD5E1"
+                android:textSize="10sp" />
 
             <TextView
                 android:id="@+id/tv_log_account_3"
@@ -421,33 +349,27 @@
 
             <TextView
                 android:id="@+id/tv_log_first_token_3"
-                android:layout_width="38dp"
+                android:layout_width="31dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="3dp"
-                android:fontFamily="monospace"
-                android:typeface="monospace"
                 android:gravity="end"
                 android:includeFontPadding="false"
-                android:singleLine="true"
-                android:text="0s"
-                android:textColor="#38BDF8"
-                android:textSize="9sp" />
+                android:layout_marginEnd="3dp"
+                android:text="--"
+                android:textColor="#FDBA74"
+                android:textSize="8.5sp" />
 
             <TextView
                 android:id="@+id/tv_log_duration_3"
-                android:layout_width="38dp"
+                android:layout_width="39dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="3dp"
-                android:fontFamily="monospace"
-                android:typeface="monospace"
                 android:gravity="end"
                 android:includeFontPadding="false"
-                android:singleLine="true"
+                android:layout_marginEnd="3dp"
                 android:text="0s"
                 android:textColor="#34D399"
-                android:textSize="9sp"
+                android:textSize="9.5sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -455,11 +377,8 @@
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:fontFamily="monospace"
-                android:typeface="monospace"
                 android:gravity="end"
                 android:includeFontPadding="false"
-                android:singleLine="true"
                 android:text="--:--:--"
                 android:textColor="#94A3B8"
                 android:textSize="8sp" />
@@ -487,10 +406,9 @@
                 android:includeFontPadding="false"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="暂无记录"
-                android:textColor="#FFFFFF"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+                android:text="--"
+                android:textColor="#CBD5E1"
+                android:textSize="10sp" />
 
             <TextView
                 android:id="@+id/tv_log_account_4"
@@ -514,33 +432,27 @@
 
             <TextView
                 android:id="@+id/tv_log_first_token_4"
-                android:layout_width="38dp"
+                android:layout_width="31dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="3dp"
-                android:fontFamily="monospace"
-                android:typeface="monospace"
                 android:gravity="end"
                 android:includeFontPadding="false"
-                android:singleLine="true"
-                android:text="0s"
-                android:textColor="#38BDF8"
-                android:textSize="9sp" />
+                android:layout_marginEnd="3dp"
+                android:text="--"
+                android:textColor="#FDBA74"
+                android:textSize="8.5sp" />
 
             <TextView
                 android:id="@+id/tv_log_duration_4"
-                android:layout_width="38dp"
+                android:layout_width="39dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="3dp"
-                android:fontFamily="monospace"
-                android:typeface="monospace"
                 android:gravity="end"
                 android:includeFontPadding="false"
-                android:singleLine="true"
+                android:layout_marginEnd="3dp"
                 android:text="0s"
                 android:textColor="#34D399"
-                android:textSize="9sp"
+                android:textSize="9.5sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -548,18 +460,15 @@
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:fontFamily="monospace"
-                android:typeface="monospace"
                 android:gravity="end"
                 android:includeFontPadding="false"
-                android:singleLine="true"
                 android:text="--:--:--"
                 android:textColor="#94A3B8"
                 android:textSize="8sp" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- 4. 底栏性能汇总 -->
+    <!-- 3. 底栏汇总简报 -->
     <TextView
         android:id="@+id/tv_bottom_summary"
         android:layout_width="match_parent"
@@ -567,7 +476,7 @@
         android:layout_marginTop="1dp"
         android:ellipsize="end"
         android:maxLines="1"
-        android:text="平均耗时: 0s · 0 RPM"
+        android:text="今日: $0.00 (0次) · 0 RPM"
         android:textColor="#64748B"
         android:textSize="10sp" />
 </LinearLayout>

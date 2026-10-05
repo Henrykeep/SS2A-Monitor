@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="top.ss2a.widget"
-    android:versionCode="8"
-    android:versionName="1.5.1">
+    android:versionCode="13"
+    android:versionName="1.8.1">
 
     <uses-sdk
         android:minSdkVersion="26"
@@ -34,9 +34,10 @@
             </intent-filter>
         </activity>
 
-        <!-- 桌面小组件广播接收器 -->
+        <!-- 桌面小组件广播接收器 (今日消耗 4x2) -->
         <receiver
             android:name="top.ss2a.widget.Sub2WidgetProvider"
+            android:label="@string/widget_title_4x2"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -54,13 +55,28 @@
                 android:resource="@xml/widget_sub2_4x2_info" />
         </receiver>
 
-        <!-- 第三个小组件：账户与日志监控小组件 -->
+        <!-- 全量用量大看板桌面小组件广播接收器 (4x3) -->
         <receiver
-            android:name="top.ss2a.widget.Sub2LogsWidgetProvider"
+            android:name="top.ss2a.widget.Sub2FullStatsWidgetProvider"
+            android:label="@string/widget_title_full"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="top.ss2a.widget.LOGS_MANUAL_REFRESH" />
+                <action android:name="top.ss2a.widget.ACTION_MANUAL_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_sub2_full_stats_info" />
+        </receiver>
+
+        <!-- 最近调用明细桌面小组件广播接收器 (4x3) -->
+        <receiver
+            android:name="top.ss2a.widget.Sub2LogsWidgetProvider"
+            android:label="@string/widget_title_logs"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="top.ss2a.widget.ACTION_MANUAL_REFRESH" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
