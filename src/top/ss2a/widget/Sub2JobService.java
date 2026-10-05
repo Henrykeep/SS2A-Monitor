@@ -28,6 +28,7 @@ public class Sub2JobService extends JobService {
                     Sub2WidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
                     Sub2FullStatsWidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
                     Sub2LogsWidgetProvider.updateAllWidgets(getApplicationContext(), fresh, logs);
+                    Sub2LatencyWidgetProvider.updateAllWidgets(getApplicationContext(), fresh, logs);
                 } catch (Exception ignored) {
                 } finally {
                     jobFinished(params, false);

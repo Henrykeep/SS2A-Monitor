@@ -392,6 +392,8 @@ public class Sub2ApiClient {
                         String createdAt = itemObj.optString("created_at", "");
                         double cost = itemObj.optDouble("actual_cost", itemObj.optDouble("total_cost", 0.0));
                         long durationMs = itemObj.optLong("duration_ms", 0);
+                        long firstTokenMs = itemObj.optLong("first_token_ms", 0);
+                        String firstTokenStr = formatDuration(firstTokenMs);
                         long inTokens = itemObj.optLong("input_tokens", 0);
                         long outTokens = itemObj.optLong("output_tokens", 0);
                         long cacheTokens = itemObj.optLong("cache_read_tokens", 0);
@@ -429,6 +431,8 @@ public class Sub2ApiClient {
                         logItem.account = accountStr;
                         logItem.rawCost = cost;
                         logItem.durationMs = durationMs;
+                        logItem.firstTokenMs = firstTokenMs;
+                        logItem.firstToken = firstTokenStr;
                         logItem.hasCacheHit = (cacheTokens > 0);
                         list.add(logItem);
                     }

@@ -110,6 +110,8 @@ public class WidgetDataStore {
                     obj.put("display_model", item.displayModel != null ? item.displayModel : item.model);
                     obj.put("raw_cost", item.rawCost);
                     obj.put("duration_ms", item.durationMs);
+                    obj.put("first_token_ms", item.firstTokenMs);
+                    obj.put("first_token", item.firstToken != null ? item.firstToken : "0s");
                     obj.put("cache_hit", item.hasCacheHit);
                     array.put(obj);
                 } catch (Exception ignored) {}
@@ -163,6 +165,8 @@ public class WidgetDataStore {
                 item.displayModel = obj.optString("display_model", Sub2LogItem.cleanModelName(item.model));
                 item.rawCost = obj.optDouble("raw_cost", 0.0);
                 item.durationMs = obj.optLong("duration_ms", 0);
+                item.firstTokenMs = obj.optLong("first_token_ms", 0);
+                item.firstToken = obj.optString("first_token", "0s");
                 item.hasCacheHit = obj.optBoolean("cache_hit", false);
                 list.add(item);
             }

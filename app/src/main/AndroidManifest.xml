@@ -78,5 +78,21 @@
             android:permission="android.permission.BIND_JOB_SERVICE"
             android:exported="true" />
 
+    
+        <!-- 第 4 个小组件：最近调用性能与首字延迟看板 (4x3) -->
+        <receiver
+            android:name=".Sub2LatencyWidgetProvider"
+            android:exported="true"
+            android:label="SS2A 性能耗时 (4x3)">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="top.ss2a.widget.ACTION_MANUAL_REFRESH" />
+                <action android:name="top.ss2a.widget.LATENCY_MANUAL_REFRESH" />
+                <action android:name="top.ss2a.widget.LOGS_MANUAL_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_sub2_latency_info" />
+        </receiver>
     </application>
 </manifest>

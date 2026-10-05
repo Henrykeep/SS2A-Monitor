@@ -8,6 +8,8 @@ public class Sub2LogItem {
     public String cost = "$0.00";
     public double rawCost = 0.0;
     public long durationMs = 0;
+    public long firstTokenMs = 0;
+    public String firstToken = "0s";
     public String duration = "0s";
     public String tokensSummary = "0 Tokens";
     public boolean hasCacheHit = false;

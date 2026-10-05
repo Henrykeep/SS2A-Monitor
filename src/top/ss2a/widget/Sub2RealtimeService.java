@@ -116,6 +116,7 @@ public class Sub2RealtimeService extends Service {
                     Sub2WidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
                     Sub2FullStatsWidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
                     Sub2LogsWidgetProvider.updateAllWidgets(getApplicationContext(), fresh, logs);
+                    Sub2LatencyWidgetProvider.updateAllWidgets(getApplicationContext(), fresh, logs);
                     if (fresh.isSuccess) {
                         updateForegroundNotification("今日: " + fresh.todayCost + " | 累计: " + fresh.totalCost + " | " + fresh.todayRequests + "次 (" + fresh.lastUpdateTime + ")");
                     } else if (fresh.errorMessage != null && !fresh.errorMessage.isEmpty()) {
