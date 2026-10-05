@@ -454,7 +454,7 @@
                 android:visibility="gone" />
         </LinearLayout>
 
-        <!-- 卡片 4：桌面添加指南与保活提示 -->
+                <!-- 卡片 4：🛡️ 后台极速常驻与防杀守护 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -463,26 +463,140 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="💡 桌面组件添加说明"
-                android:textColor="#FBBF24"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🛡️ 后台高保活与防杀神盾"
+                    android:textColor="#F5C2E7"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_pill_tag"
+                    android:paddingStart="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="3dp"
+                    android:text="防冻结·自愈"
+                    android:textColor="#CBA6F7"
+                    android:textSize="10sp" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
+                android:text="保障划掉后台卡片或长时间锁屏后，桌面小组件依然保持秒级极速自动更新。"
+                android:textColor="#A6ADC8"
+                android:textSize="12sp" />
+
+            <!-- 当前电池优化检测状态栏 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_terminal_card"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/tv_battery_opt_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="正在检测系统后台电池策略..."
+                    android:textColor="#34D399"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_battery_opt_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="建议加入系统白名单，避免手机进入深睡眠或多任务清理时中断服务。"
+                    android:textColor="#6C7086"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- 操作按钮组 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_request_battery_opt"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_btn_accent"
+                    android:text="⚡ 申请电池白名单"
+                    android:textColor="#11111B"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btn_open_app_settings"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_btn_secondary"
+                    android:text="⚙️ 系统权限与自启"
+                    android:textColor="#E2E8F0"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- 保活三步指南 -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:lineSpacingExtra="3dp"
-                android:text="1. 返回手机主屏幕桌面，长按空白处；
-2. 在桌面插件/微件列表中找到【SS2A 监控】(4x2)；
-3. 拖拽到桌面后即可享受秒级极速大盘刷新！
-4. 如需后台极速长效运行，可在系统设置中将本应用加入【自启动】与【电池无限制/忽略电池优化】。"
+                android:text="彻底防杀推荐：
+1. 【卡片加锁】：在多任务卡片视图长按或下滑本应用锁定 🔒；
+2. 【开启自启】：点击上方设置按钮，开启【允许自启动】与【后台运行】；
+3. 【电池优化】：点击上方申请白名单，设置电池为【无限制】。"
+                android:textColor="#9399B2"
+                android:textSize="11.5sp" />
+        </LinearLayout>
+
+        <!-- 卡片 5：桌面小组件添加说明 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_main_card"
+            android:orientation="vertical"
+            android:padding="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💡 桌面小组件添加说明"
+                android:textColor="#FBBF24"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:lineSpacingExtra="3dp"
+                android:text="1. 返回手机桌面，长按空白处进入编辑模式；
+2. 在小组件列表中找到【SS2A 监控】(4x2)；
+3. 拖拽放置到桌面即可享受秒级极速大盘刷新；
+4. 点击小组件右上角 🔄 按钮可立即强制同步最新数据。"
                 android:textColor="#94A3B8"
                 android:textSize="12sp" />
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>

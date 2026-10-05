@@ -1,5 +1,6 @@
 package top.ss2a.widget;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -14,6 +15,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.os.SystemClock;
 
 public class Sub2RealtimeService extends Service {
     public static final String ACTION_SYNC_NOW = "top.ss2a.widget.ACTION_SYNC_NOW";
@@ -107,7 +109,9 @@ public class Sub2RealtimeService extends Service {
                     Sub2DashboardData fresh = client.fetchDashboardStats(forced);
                     Sub2WidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
                     if (fresh.isSuccess) {
-                        updateForegroundNotification("今日消费: " + fresh.todayCost + " | 请求: " + fresh.todayRequests + "次");
+                        updateForegroundNotification("今日消费: " + fresh.todayCost + " | 请求: " + fresh.todayRequests + "次 (" + fresh.lastUpdateTime + ")");
+                    } else if (fresh.errorMessage != null && !fresh.errorMessage.isEmpty()) {
+                        updateForegroundNotification("SS2A 监控: " + fresh.errorMessage);
                     }
                 } catch (Exception ignored) {}
             }
@@ -116,6 +120,7 @@ public class Sub2RealtimeService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        startPollingLoop();
         if (intent != null && ACTION_SYNC_NOW.equals(intent.getAction())) {
             triggerAsyncSync(true);
         } else {
@@ -123,6 +128,34 @@ public class Sub2RealtimeService extends Service {
         }
         scheduleNextPoll();
         return START_STICKY;
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        // 当用户在任务管理器中划掉 App 界面时，利用 Alarm 立即安排复活拉起前台服务
+        try {
+            Intent restartIntent = new Intent(getApplicationContext(), Sub2RealtimeService.class);
+            restartIntent.setAction(ACTION_SYNC_NOW);
+            PendingIntent pi;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                pi = PendingIntent.getForegroundService(
+                    getApplicationContext(), 1002, restartIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            } else {
+                pi = PendingIntent.getService(
+                    getApplicationContext(), 1002, restartIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            }
+            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            if (am != null) {
+                long triggerAt = SystemClock.elapsedRealtime() + 1000L;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    am.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAt, pi);
+                } else {
+                    am.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAt, pi);
+                }
+            }
+            Sub2WidgetProvider.scheduleAutoAlarm(getApplicationContext());
+        } catch (Exception ignored) {}
     }
 
     @Override
@@ -137,6 +170,9 @@ public class Sub2RealtimeService extends Service {
                 unregisterReceiver(screenReceiver);
             } catch (Exception ignored) {}
         }
+        try {
+            Sub2WidgetProvider.scheduleAutoAlarm(getApplicationContext());
+        } catch (Exception ignored) {}
     }
 
     @Override
@@ -148,8 +184,8 @@ public class Sub2RealtimeService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                 CHANNEL_ID,
-                "SS2A 实时监控同步",
-                NotificationManager.IMPORTANCE_MIN
+                "SS2A 实时监控保活",
+                NotificationManager.IMPORTANCE_LOW
             );
             channel.setDescription("保证桌面小组件能够极速高频获取最新数据");
             channel.setShowBadge(false);
@@ -161,44 +197,50 @@ public class Sub2RealtimeService extends Service {
     }
 
     private void startForegroundNotification(String text) {
+        Notification notification = buildNotification(text);
+        startForeground(NOTIFICATION_ID, notification);
+    }
+
+    private void updateForegroundNotification(String text) {
+        try {
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm != null) {
+                nm.notify(NOTIFICATION_ID, buildNotification(text));
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private Notification buildNotification(String text) {
         Intent notifyIntent = new Intent(this, MainActivity.class);
         PendingIntent pi = PendingIntent.getActivity(
             this, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        Intent syncIntent = new Intent(this, Sub2RealtimeService.class);
+        syncIntent.setAction(ACTION_SYNC_NOW);
+        PendingIntent pSync;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            pSync = PendingIntent.getForegroundService(
+                this, 1, syncIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            pSync = PendingIntent.getService(
+                this, 1, syncIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        }
+
         Notification.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder = new Notification.Builder(this, CHANNEL_ID);
         } else {
             builder = new Notification.Builder(this);
         }
-        builder.setContentTitle("SS2A 实时监控")
+
+        builder.setContentTitle("SS2A 实时监控 · 正常运行")
                .setContentText(text)
                .setSmallIcon(android.R.drawable.ic_popup_sync)
                .setContentIntent(pi)
-               .setOngoing(true);
-        startForeground(NOTIFICATION_ID, builder.build());
-    }
+               .setOngoing(true)
+               .addAction(android.R.drawable.ic_popup_sync, "⚡ 立即刷新", pSync);
 
-    private void updateForegroundNotification(String text) {
-        try {
-            Intent notifyIntent = new Intent(this, MainActivity.class);
-            PendingIntent pi = PendingIntent.getActivity(
-                this, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            Notification.Builder builder;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                builder = new Notification.Builder(this, CHANNEL_ID);
-            } else {
-                builder = new Notification.Builder(this);
-            }
-            builder.setContentTitle("SS2A 实时监控")
-                   .setContentText(text)
-                   .setSmallIcon(android.R.drawable.ic_popup_sync)
-                   .setContentIntent(pi)
-                   .setOngoing(true);
-            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            if (nm != null) {
-                nm.notify(NOTIFICATION_ID, builder.build());
-            }
-        } catch (Exception ignored) {}
+        return builder.build();
     }
 
     public static void start(Context context) {

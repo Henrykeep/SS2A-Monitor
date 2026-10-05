@@ -1,4 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SS2A 监控</string>
-    <string name="widget_4x2_description">实时显示 Sub2API 中转站今日消耗与调用量</string>
+    <string name="widget_desc">Sub2API 极客大盘秒级实时监控桌面小组件</string>
 </resources>

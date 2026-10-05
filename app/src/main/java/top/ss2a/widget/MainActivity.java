@@ -1,10 +1,16 @@
 package top.ss2a.widget;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -25,7 +31,7 @@ public class MainActivity extends Activity {
     private Button btnSaveConfig;
     private ProgressBar progressBar;
     private TextView tvTestResult;
-    
+
     // 顶部小组件实时效果预览卡片
     private TextView tvPreviewMode;
     private TextView tvPreviewTime;
@@ -38,6 +44,12 @@ public class MainActivity extends Activity {
     private Button btn30s;
     private Button btn60s;
     private Button btn300s;
+
+    // 后台高保活与防杀神盾控件
+    private TextView tvBatteryOptStatus;
+    private TextView tvBatteryOptHint;
+    private Button btnRequestBatteryOpt;
+    private Button btnOpenAppSettings;
 
     private WidgetDataStore dataStore;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -54,6 +66,7 @@ public class MainActivity extends Activity {
         etAdminPassword = findViewById(R.id.et_admin_password);
         etAdminToken = findViewById(R.id.et_admin_token);
         etRefreshInterval = findViewById(R.id.et_refresh_interval);
+
         btnQuickLogin = findViewById(R.id.btn_quick_login);
         btnTestConnection = findViewById(R.id.btn_test_connection);
         btnSaveConfig = findViewById(R.id.btn_save_config);
@@ -70,6 +83,11 @@ public class MainActivity extends Activity {
         btn30s = findViewById(R.id.btn_chip_30s);
         btn60s = findViewById(R.id.btn_chip_60s);
         btn300s = findViewById(R.id.btn_chip_300s);
+
+        tvBatteryOptStatus = findViewById(R.id.tv_battery_opt_status);
+        tvBatteryOptHint = findViewById(R.id.tv_battery_opt_hint);
+        btnRequestBatteryOpt = findViewById(R.id.btn_request_battery_opt);
+        btnOpenAppSettings = findViewById(R.id.btn_open_app_settings);
 
         etServerUrl.setText(dataStore.getServerUrl());
         etAdminAccount.setText(dataStore.getAdminAccount());
@@ -98,13 +116,116 @@ public class MainActivity extends Activity {
             }
         });
 
+        if (btnRequestBatteryOpt != null) {
+            btnRequestBatteryOpt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    requestIgnoreBatteryOpt();
+                }
+            });
+        }
+
+        if (btnOpenAppSettings != null) {
+            btnOpenAppSettings.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openAppSettings();
+                }
+            });
+        }
+
         setupIntervalChips();
         updatePreviewCard(dataStore.getCachedStats());
+        updateBatteryOptStatus();
 
         // 确保后台服务与保活调度运行
         Sub2RealtimeService.start(this);
         Sub2WidgetProvider.scheduleAutoAlarm(this);
         Sub2JobService.schedulePeriodicJob(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateBatteryOptStatus();
+        updatePreviewCard(dataStore.getCachedStats());
+    }
+
+    private void updateBatteryOptStatus() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            boolean isIgnoring = (pm != null && pm.isIgnoringBatteryOptimizations(getPackageName()));
+            if (isIgnoring) {
+                if (tvBatteryOptStatus != null) {
+                    tvBatteryOptStatus.setText("🛡️ 电池优化白名单已生效 (后台防杀就绪)");
+                    tvBatteryOptStatus.setTextColor(Color.parseColor("#34D399"));
+                }
+                if (tvBatteryOptHint != null) {
+                    tvBatteryOptHint.setText("应用已获后台无限制特权，锁屏或划掉卡片时不易被系统休眠冻结。");
+                }
+                if (btnRequestBatteryOpt != null) {
+                    btnRequestBatteryOpt.setText("✅ 已在白名单中");
+                    btnRequestBatteryOpt.setEnabled(false);
+                    btnRequestBatteryOpt.setAlpha(0.6f);
+                }
+            } else {
+                if (tvBatteryOptStatus != null) {
+                    tvBatteryOptStatus.setText("⚠️ 未加入电池优化白名单 (可能被系统清理)");
+                    tvBatteryOptStatus.setTextColor(Color.parseColor("#FBBF24"));
+                }
+                if (tvBatteryOptHint != null) {
+                    tvBatteryOptHint.setText("建议点击下方按钮加入白名单，防止在任务列表划掉或长时间待机时被系统清理。");
+                }
+                if (btnRequestBatteryOpt != null) {
+                    btnRequestBatteryOpt.setText("⚡ 申请电池白名单");
+                    btnRequestBatteryOpt.setEnabled(true);
+                    btnRequestBatteryOpt.setAlpha(1.0f);
+                }
+            }
+        } else {
+            if (tvBatteryOptStatus != null) {
+                tvBatteryOptStatus.setText("🛡️ 当前系统无需电池优化白名单配置");
+                tvBatteryOptStatus.setTextColor(Color.parseColor("#34D399"));
+            }
+            if (btnRequestBatteryOpt != null) {
+                btnRequestBatteryOpt.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void requestIgnoreBatteryOpt() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                if (pm != null && pm.isIgnoringBatteryOptimizations(getPackageName())) {
+                    Toast.makeText(this, "已在电池优化白名单中，无需重复申请！", Toast.LENGTH_SHORT).show();
+                    updateBatteryOptStatus();
+                    return;
+                }
+                Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+            } catch (Exception e) {
+                try {
+                    Intent fallbackIntent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                    startActivity(fallbackIntent);
+                } catch (Exception ex) {
+                    Toast.makeText(this, "打开系统电池设置失败: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else {
+            Toast.makeText(this, "当前系统版本无需配置", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void openAppSettings() {
+        try {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(this, "打开应用详情页失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void updatePreviewCard(Sub2DashboardData data) {
@@ -253,10 +374,10 @@ public class MainActivity extends Activity {
                             if (res.isSuccess) {
                                 StringBuilder sb = new StringBuilder();
                                 sb.append("连接成功！\n");
-                                sb.append("• 监控模式: ").append(res.modeTitle).append("\n");
-                                sb.append("• 今日消费: ").append(res.todayCost).append("\n");
-                                sb.append("• 今日请求: ").append(res.todayRequests).append(" 次\n");
-                                sb.append("• 今日 Tokens: ").append(res.todayTokens).append("\n");
+                                    sb.append("• 监控模式: ").append(res.modeTitle).append("\n");
+                                    sb.append("• 今日消费: ").append(res.todayCost).append("\n");
+                                    sb.append("• 今日请求: ").append(res.todayRequests).append(" 次\n");
+                                    sb.append("• 今日 Tokens: ").append(res.todayTokens).append("\n");
                                 sb.append("• 更新时间: ").append(res.lastUpdateTime).append("\n");
                                 sb.append("• 极速模式: 每 ").append(dataStore.getRefreshIntervalSeconds()).append(" 秒自动轮询已就绪！");
                                 tvTestResult.setTextColor(Color.parseColor("#34D399"));
@@ -303,6 +424,7 @@ public class MainActivity extends Activity {
         dataStore.setAdminToken(token);
 
         Toast.makeText(this, "配置已保存！极速实时同步服务已启动", Toast.LENGTH_SHORT).show();
+
         Sub2DashboardData cached = dataStore.getCachedStats();
         updatePreviewCard(cached);
         Sub2WidgetProvider.updateAllWidgets(this, cached);
@@ -333,8 +455,10 @@ public class MainActivity extends Activity {
         etRefreshInterval.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
             @Override
             public void afterTextChanged(Editable s) {
                 updateChipStates();

@@ -58,12 +58,17 @@ public class Sub2WidgetProvider extends AppWidgetProvider {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_sub2_4x2);
             views.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
             mgr.partiallyUpdateAppWidget(ids, views);
-            
+
+            Sub2RealtimeService.start(context);
             Sub2RealtimeService.syncNow(context);
             scheduleAutoAlarm(context);
         } else if (ACTION_AUTO_ALARM_TICK.equals(action) || 
                    Intent.ACTION_USER_PRESENT.equals(action) || 
-                   Intent.ACTION_BOOT_COMPLETED.equals(action)) {
+                   Intent.ACTION_BOOT_COMPLETED.equals(action) ||
+                   "android.intent.action.MY_PACKAGE_REPLACED".equals(action) ||
+                   "android.net.conn.CONNECTIVITY_CHANGE".equals(action) ||
+                   Intent.ACTION_POWER_CONNECTED.equals(action) ||
+                   Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
             Sub2RealtimeService.start(context);
             Sub2RealtimeService.syncNow(context);
             scheduleAutoAlarm(context);
@@ -115,6 +120,7 @@ public class Sub2WidgetProvider extends AppWidgetProvider {
         views.setTextViewText(R.id.tv_today_requests, data.todayRequests + " 次");
         views.setTextViewText(R.id.tv_today_tokens, data.todayTokens + " Tokens");
         views.setTextViewText(R.id.tv_update_time, "更新于 " + data.lastUpdateTime);
+
         if (data.isSuccess) {
             views.setViewVisibility(R.id.tv_error_msg, View.GONE);
             views.setInt(R.id.iv_status_dot, "setColorFilter", 0xFF10B981);
@@ -123,7 +129,7 @@ public class Sub2WidgetProvider extends AppWidgetProvider {
             views.setTextViewText(R.id.tv_error_msg, data.errorMessage != null && !data.errorMessage.isEmpty() ? data.errorMessage : "同步异常");
             views.setInt(R.id.iv_status_dot, "setColorFilter", 0xFFEF4444);
         }
-        
+
         Intent refreshIntent = new Intent(context, Sub2WidgetProvider.class);
         refreshIntent.setAction(ACTION_MANUAL_REFRESH);
         PendingIntent pRefresh = PendingIntent.getBroadcast(
