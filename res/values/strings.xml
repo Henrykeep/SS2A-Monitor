@@ -7,4 +7,6 @@
     <string name="widget_title_4x2">SS2A · 今日消耗监控 (4x2)</string>
     <string name="widget_title_full">SS2A · 全部用量看板 (4x3)</string>
     <string name="widget_title_logs">SS2A · 最近调用明细 (4x3)</string>
+    <string name="widget_latency_desc">SS2A 性能耗时看板，深度监控大模型首字延迟(TTFT)与请求总完成时长</string>
+    <string name="widget_title_latency">SS2A · 性能耗时 (4x3)</string>
 </resources>

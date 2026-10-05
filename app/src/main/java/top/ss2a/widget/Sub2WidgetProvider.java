@@ -75,6 +75,13 @@ public class Sub2WidgetProvider extends AppWidgetProvider {
                 viewsLogs.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
                 mgr.partiallyUpdateAppWidget(idsLogs, viewsLogs);
             }
+            ComponentName cnLatency = new ComponentName(context, Sub2LatencyWidgetProvider.class);
+            int[] idsLatency = mgr.getAppWidgetIds(cnLatency);
+            if (idsLatency != null && idsLatency.length > 0) {
+                RemoteViews viewsLatency = new RemoteViews(context.getPackageName(), R.layout.widget_sub2_latency);
+                viewsLatency.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
+                mgr.partiallyUpdateAppWidget(idsLatency, viewsLatency);
+            }
 
             Sub2RealtimeService.start(context);
             Sub2RealtimeService.syncNow(context);

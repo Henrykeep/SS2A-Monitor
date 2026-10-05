@@ -393,7 +393,7 @@ public class Sub2ApiClient {
                         double cost = itemObj.optDouble("actual_cost", itemObj.optDouble("total_cost", 0.0));
                         long durationMs = itemObj.optLong("duration_ms", 0);
                         long firstTokenMs = itemObj.optLong("first_token_ms", 0);
-                        String firstTokenStr = formatDuration(firstTokenMs);
+                        String firstTokenStr = firstTokenMs > 0 ? formatDuration(firstTokenMs) : "--";
                         long inTokens = itemObj.optLong("input_tokens", 0);
                         long outTokens = itemObj.optLong("output_tokens", 0);
                         long cacheTokens = itemObj.optLong("cache_read_tokens", 0);
@@ -458,11 +458,12 @@ public class Sub2ApiClient {
     }
 
     private String formatDuration(double ms) {
-        if (ms <= 0) return "0s";
+        if (ms <= 0) return "0.0s";
         if (ms >= 1000.0) {
             return String.format(Locale.US, "%.1fs", ms / 1000.0);
         }
-        return Math.round(ms) + "ms";
+        // 小于1秒同样采用秒级统一展现 (如 0.8s, 0.3s)，保证全列单位"s"与小数点物理绝对对齐！
+        return String.format(Locale.US, "%.1fs", ms / 1000.0);
     }
 
     private String readStream(InputStream is) throws Exception {

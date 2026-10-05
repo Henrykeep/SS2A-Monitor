@@ -176,17 +176,20 @@
                 android:textColor="#93C5FD"
                 android:textSize="7.5sp" />
 
-            <!-- 列 3：Tokens 吞吐 (严格锁定 31dp 固定宽度，全行右对齐) -->
+            <!-- 列 3：首字延迟 TTFT (严格锁定 33dp 固定宽度，右对齐，monospace 等宽字体) -->
             <TextView
                 android:id="@+id/tv_log_first_token_1"
-                android:layout_width="31dp"
+                android:layout_width="33dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:gravity="end"
+                android:gravity="end|center_vertical"
                 android:includeFontPadding="false"
-                android:layout_marginEnd="3dp"
+                android:fontFamily="monospace"
+                android:typeface="monospace"
+                android:layout_marginEnd="4dp"
+                android:singleLine="true"
                 android:text="--"
-                android:textColor="#FDBA74"
+                android:textColor="#38BDF8"
                 android:textSize="8.5sp" />
 
             <!-- 列 4：消费金额 (严格锁定 39dp 固定宽度，全行右对齐) -->
@@ -271,14 +274,17 @@
 
             <TextView
                 android:id="@+id/tv_log_first_token_2"
-                android:layout_width="31dp"
+                android:layout_width="33dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:gravity="end"
+                android:gravity="end|center_vertical"
                 android:includeFontPadding="false"
-                android:layout_marginEnd="3dp"
+                android:fontFamily="monospace"
+                android:typeface="monospace"
+                android:layout_marginEnd="4dp"
+                android:singleLine="true"
                 android:text="--"
-                android:textColor="#FDBA74"
+                android:textColor="#38BDF8"
                 android:textSize="8.5sp" />
 
             <TextView
@@ -361,14 +367,17 @@
 
             <TextView
                 android:id="@+id/tv_log_first_token_3"
-                android:layout_width="31dp"
+                android:layout_width="33dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:gravity="end"
+                android:gravity="end|center_vertical"
                 android:includeFontPadding="false"
-                android:layout_marginEnd="3dp"
+                android:fontFamily="monospace"
+                android:typeface="monospace"
+                android:layout_marginEnd="4dp"
+                android:singleLine="true"
                 android:text="--"
-                android:textColor="#FDBA74"
+                android:textColor="#38BDF8"
                 android:textSize="8.5sp" />
 
             <TextView
@@ -450,14 +459,17 @@
 
             <TextView
                 android:id="@+id/tv_log_first_token_4"
-                android:layout_width="31dp"
+                android:layout_width="33dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:gravity="end"
+                android:gravity="end|center_vertical"
                 android:includeFontPadding="false"
-                android:layout_marginEnd="3dp"
+                android:fontFamily="monospace"
+                android:typeface="monospace"
+                android:layout_marginEnd="4dp"
+                android:singleLine="true"
                 android:text="--"
-                android:textColor="#FDBA74"
+                android:textColor="#38BDF8"
                 android:textSize="8.5sp" />
 
             <TextView

@@ -130,12 +130,12 @@ public class Sub2LatencyWidgetProvider extends AppWidgetProvider {
                     String mName = item.displayModel != null && !item.displayModel.isEmpty() ? item.displayModel : Sub2LogItem.cleanModelName(item.model);
                     views.setTextViewText(modelIds[i], mName);
 
-                    // 2. 首字延迟 (天蓝色)
-                    String ftStr = (item.firstToken != null && !item.firstToken.isEmpty()) ? item.firstToken : (item.firstTokenMs > 0 ? (item.firstTokenMs + "ms") : "--");
+                    // 2. 首字延迟 (天蓝色，统一以 0.0s 秒级 monospace 展示)
+                    String ftStr = (item.firstToken != null && !item.firstToken.isEmpty()) ? item.firstToken : (item.firstTokenMs > 0 ? String.format(java.util.Locale.US, "%.1fs", item.firstTokenMs / 1000.0) : "--");
                     views.setTextViewText(firstTokenIds[i], ftStr);
-
                     // 3. 总耗时：>= 10s 警告珊瑚红，普通翡翠绿
-                    String durStr = (item.duration != null && !item.duration.isEmpty()) ? item.duration : (item.durationMs > 0 ? (item.durationMs + "ms") : "--");
+                    String durStr = (item.duration != null && !item.duration.isEmpty()) ? item.duration : (item.durationMs > 0 ? String.format(java.util.Locale.US, "%.1fs", item.durationMs / 1000.0) : "0.0s");
+                    views.setTextViewText(durationIds[i], durStr);
                     views.setTextViewText(durationIds[i], durStr);
                     if (item.durationMs >= 10000) {
                         views.setTextColor(durationIds[i], 0xFFFB7185); // 珊瑚红警告

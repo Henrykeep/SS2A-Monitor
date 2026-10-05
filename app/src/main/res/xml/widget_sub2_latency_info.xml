@@ -8,4 +8,4 @@
     android:initialLayout="@layout/widget_sub2_latency"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
-    android:description="@string/app_name" />
+    android:description="@string/widget_latency_desc" />
