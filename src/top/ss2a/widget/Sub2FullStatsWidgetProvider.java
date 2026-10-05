@@ -72,21 +72,19 @@ public class Sub2FullStatsWidgetProvider extends AppWidgetProvider {
 
         // 1. 今日用量
         views.setTextViewText(R.id.tv_today_cost, data.todayCost);
-        views.setTextViewText(R.id.tv_today_requests, data.todayRequests + " 次");
+        views.setTextViewText(R.id.tv_today_requests, data.todayRequests + "次");
         views.setTextViewText(R.id.tv_today_tokens, data.todayTokens + " Tok");
-        views.setTextViewText(R.id.tv_today_cache, "今日缓存: " + data.todayCacheReadTokens);
 
         // 2. 累计全部用量
         views.setTextViewText(R.id.tv_total_cost, data.totalCost);
-        views.setTextViewText(R.id.tv_total_requests, data.totalRequests + " 次");
+        views.setTextViewText(R.id.tv_total_requests, data.totalRequests + "次");
         views.setTextViewText(R.id.tv_total_tokens, data.totalTokens + " Tok");
-        views.setTextViewText(R.id.tv_total_cache, "总缓存: " + data.totalCacheReadTokens);
 
         // 3. 实时速率与负载
-        views.setTextViewText(R.id.tv_rpm, data.rpm + "/m");
-        views.setTextViewText(R.id.tv_tpm, data.tpm + "/m");
-        views.setTextViewText(R.id.tv_avg_duration, data.avgDuration);
-        views.setTextViewText(R.id.tv_active_keys, data.activeKeys + " 个");
+        views.setTextViewText(R.id.tv_rpm, "RPM: " + data.rpm);
+        views.setTextViewText(R.id.tv_tpm, "TPM: " + data.tpm);
+        views.setTextViewText(R.id.tv_avg_duration, "延迟: " + data.avgDuration);
+        views.setTextViewText(R.id.tv_active_keys, "Key: " + data.activeKeys);
 
         // 4. 成功/错误状态反馈
         if (data.isSuccess) {

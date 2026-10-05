@@ -5,10 +5,10 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_widget_card"
     android:orientation="vertical"
-    android:paddingStart="14dp"
-    android:paddingTop="12dp"
-    android:paddingEnd="14dp"
-    android:paddingBottom="12dp">
+    android:paddingStart="12dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="12dp"
+    android:paddingBottom="10dp">
 
     <!-- 1. 顶栏：微光状态点 + 标题 + 时间戳胶囊 + 快捷刷新/设置 -->
     <LinearLayout
@@ -19,9 +19,9 @@
 
         <ImageView
             android:id="@+id/iv_status_dot"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_width="7.5dp"
+            android:layout_height="7.5dp"
+            android:layout_marginEnd="7dp"
             android:src="@drawable/ic_dot_status" />
 
         <TextView
@@ -33,40 +33,40 @@
             android:maxLines="1"
             android:text="SS2A · 全部用量看板"
             android:textColor="#F8FAFC"
-            android:textSize="13.5sp"
+            android:textSize="13sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_update_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="7dp"
             android:background="@drawable/bg_widget_tag"
-            android:paddingStart="7dp"
-            android:paddingTop="2.5dp"
-            android:paddingEnd="7dp"
-            android:paddingBottom="2.5dp"
-            android:text="--:--"
+            android:paddingStart="6dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="2dp"
+            android:text="更新于 --:--"
             android:textColor="#94A3B8"
-            android:textSize="10sp" />
+            android:textSize="9.5sp" />
 
         <ImageButton
             android:id="@+id/btn_refresh"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:background="@drawable/bg_widget_btn"
             android:contentDescription="立即刷新"
-            android:padding="5.5dp"
+            android:padding="5dp"
             android:src="@drawable/ic_refresh" />
 
         <ImageButton
             android:id="@+id/btn_settings"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginStart="6dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="5dp"
             android:background="@drawable/bg_widget_btn"
             android:contentDescription="配置设置"
-            android:padding="5.5dp"
+            android:padding="5dp"
             android:src="@drawable/ic_settings" />
     </LinearLayout>
 
@@ -79,45 +79,44 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="#F87171"
-        android:textSize="10sp"
+        android:textSize="9.5sp"
         android:visibility="gone" />
 
-    <!-- 2. 核心两大板块：今日用量卡片 VS 累计全量卡片 -->
+    <!-- 2. 核心两大板块：今日用量卡片 VS 累计全量卡片 (高度自适应伸缩) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="6dp"
         android:layout_marginBottom="6dp"
-        android:layout_weight="1.6"
-        android:gravity="center_vertical"
+        android:layout_weight="1"
         android:orientation="horizontal">
 
         <!-- 左卡：今日实时用量 -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginEnd="5dp"
+            android:layout_marginEnd="4dp"
             android:layout_weight="1"
             android:background="@drawable/bg_widget_metric_main"
-            android:gravity="center_vertical"
             android:orientation="vertical"
-            android:paddingStart="11dp"
-            android:paddingTop="6dp"
-            android:paddingEnd="11dp"
-            android:paddingBottom="6dp">
+            android:paddingStart="10dp"
+            android:paddingTop="7dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="7dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="今日用量 (USD)"
                 android:textColor="#34D399"
-                android:textSize="9.5sp"
+                android:textSize="9sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_today_cost"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
                 android:ellipsize="end"
                 android:fontFamily="sans-serif-medium"
                 android:includeFontPadding="false"
@@ -127,11 +126,17 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <!-- 今日请求与Token指标 -->
+            <!-- 弹性拉伸隔片 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <!-- 今日请求与Token横向单行紧凑排列 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
@@ -141,7 +146,7 @@
                     android:layout_weight="1"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="0 次"
+                    android:text="0次"
                     android:textColor="#93C5FD"
                     android:textSize="10sp" />
 
@@ -156,45 +161,34 @@
                     android:textSize="10sp"
                     android:textStyle="bold" />
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/tv_today_cache"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="缓存: 0"
-                android:textColor="#6EE7B7"
-                android:textSize="8.5sp" />
         </LinearLayout>
 
         <!-- 右卡：累计全部用量 -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginStart="5dp"
+            android:layout_marginStart="4dp"
             android:layout_weight="1"
             android:background="@drawable/bg_widget_metric_total"
-            android:gravity="center_vertical"
             android:orientation="vertical"
-            android:paddingStart="11dp"
-            android:paddingTop="6dp"
-            android:paddingEnd="11dp"
-            android:paddingBottom="6dp">
+            android:paddingStart="10dp"
+            android:paddingTop="7dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="7dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="累计全部用量 (USD)"
                 android:textColor="#C084FC"
-                android:textSize="9.5sp"
+                android:textSize="9sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_total_cost"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
                 android:ellipsize="end"
                 android:fontFamily="sans-serif-medium"
                 android:includeFontPadding="false"
@@ -204,11 +198,17 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <!-- 累计请求与Token指标 -->
+            <!-- 弹性拉伸隔片 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <!-- 累计请求与Token横向单行紧凑排列 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
@@ -218,8 +218,8 @@
                     android:layout_weight="1"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="0 次"
-                    android:textColor="#93C5FD"
+                    android:text="0次"
+                    android:textColor="#C4B5FD"
                     android:textSize="10sp" />
 
                 <TextView
@@ -233,178 +233,88 @@
                     android:textSize="10sp"
                     android:textStyle="bold" />
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/tv_total_cache"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="总缓存: 0"
-                android:textColor="#DDD6FE"
-                android:textSize="8.5sp" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- 3. 实时速率与负载指标条 (RPM, TPM, 延迟, Key) -->
+    <!-- 3. 底部全量性能与极客微条 (单行微拟态药丸群 + 直达后台) -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="7dp"
-        android:orientation="horizontal">
-
-        <!-- RPM -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="3dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_widget_metric_sub_pill"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RPM 负载"
-                android:textColor="#94A3B8"
-                android:textSize="8sp" />
-
-            <TextView
-                android:id="@+id/tv_rpm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:includeFontPadding="false"
-                android:text="0/min"
-                android:textColor="#38BDF8"
-                android:textSize="11.5sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- TPM -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
-            android:layout_marginEnd="3dp"
-            android:layout_weight="1.1"
-            android:background="@drawable/bg_widget_metric_sub_pill"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TPM 吞吐"
-                android:textColor="#94A3B8"
-                android:textSize="8sp" />
-
-            <TextView
-                android:id="@+id/tv_tpm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:includeFontPadding="false"
-                android:text="0/min"
-                android:textColor="#F59E0B"
-                android:textSize="11.5sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- 平均延迟 -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
-            android:layout_marginEnd="3dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_widget_metric_sub_pill"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="平均响应"
-                android:textColor="#94A3B8"
-                android:textSize="8sp" />
-
-            <TextView
-                android:id="@+id/tv_avg_duration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:includeFontPadding="false"
-                android:text="0s"
-                android:textColor="#A78BFA"
-                android:textSize="11.5sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- 密钥数 -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
-            android:layout_weight="0.9"
-            android:background="@drawable/bg_widget_metric_sub_pill"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="活跃密钥"
-                android:textColor="#94A3B8"
-                android:textSize="8sp" />
-
-            <TextView
-                android:id="@+id/tv_active_keys"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:includeFontPadding="false"
-                android:text="0"
-                android:textColor="#34D399"
-                android:textSize="11.5sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- 4. 底栏：直达控制台入口微提示 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="23dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
+        <!-- RPM -->
         <TextView
+            android:id="@+id/tv_rpm"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="3dp"
             android:layout_weight="1"
-            android:text="Sub2API 全量用量总览 · 极客大盘"
-            android:textColor="#64748B"
-            android:textSize="9.5sp" />
+            android:background="@drawable/bg_widget_metric_sub_pill"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="RPM: 0"
+            android:textColor="#38BDF8"
+            android:textSize="9.5sp"
+            android:textStyle="bold" />
 
+        <!-- TPM -->
+        <TextView
+            android:id="@+id/tv_tpm"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1.15"
+            android:background="@drawable/bg_widget_metric_sub_pill"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="TPM: 0"
+            android:textColor="#F59E0B"
+            android:textSize="9.5sp"
+            android:textStyle="bold" />
+
+        <!-- 响应延迟 -->
+        <TextView
+            android:id="@+id/tv_avg_duration"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_widget_metric_sub_pill"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="延迟: 0s"
+            android:textColor="#A78BFA"
+            android:textSize="9.5sp"
+            android:textStyle="bold" />
+
+        <!-- 活跃密钥 -->
+        <TextView
+            android:id="@+id/tv_active_keys"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="0.95"
+            android:background="@drawable/bg_widget_metric_sub_pill"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="Key: 0"
+            android:textColor="#34D399"
+            android:textSize="9.5sp"
+            android:textStyle="bold" />
+
+        <!-- 直达后台入口胶囊 -->
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@drawable/bg_widget_tag"
+            android:gravity="center"
             android:paddingStart="7dp"
-            android:paddingTop="2dp"
             android:paddingEnd="7dp"
-            android:paddingBottom="2dp"
-            android:text="进入后台 ↗"
+            android:text="后台 ↗"
             android:textColor="#CBD5E1"
             android:textSize="9.5sp"
             android:textStyle="bold" />
