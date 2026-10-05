@@ -74,7 +74,7 @@
                 android:paddingTop="4dp"
                 android:paddingEnd="10dp"
                 android:paddingBottom="4dp"
-                android:text="v1.5.1"
+                android:text="v1.6.0"
                 android:textColor="#CBA6F7"
                 android:textSize="10.5sp"
                 android:textStyle="bold" />

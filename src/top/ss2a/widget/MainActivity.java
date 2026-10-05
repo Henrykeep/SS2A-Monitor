@@ -302,14 +302,15 @@ public class MainActivity extends Activity {
                                     StringBuilder sb = new StringBuilder();
                                     sb.append("登录成功！Token 已自动绑定\n");
                                     sb.append("• 监控模式: ").append(res.modeTitle).append("\n");
-                                    sb.append("• 今日消费: ").append(res.todayCost).append("\n");
-                                    sb.append("• 今日请求: ").append(res.todayRequests).append(" 次\n");
-                                    sb.append("• 今日 Tokens: ").append(res.todayTokens).append("\n");
+                                    sb.append("• 今日消费: ").append(res.todayCost).append(" (").append(res.todayRequests).append(" 次请求)\n");
+                                    sb.append("• 累计消费: ").append(res.totalCost).append(" (").append(res.totalRequests).append(" 次请求)\n");
+                                    sb.append("• 累计 Tokens: ").append(res.totalTokens).append(" | 今日: ").append(res.todayTokens).append("\n");
                                     sb.append("• 极速模式: 每 ").append(dataStore.getRefreshIntervalSeconds()).append(" 秒自动轮询已就绪！");
                                     tvTestResult.setText(sb.toString());
                                     Toast.makeText(MainActivity.this, "登录成功！已启动秒级极速实时刷新", Toast.LENGTH_SHORT).show();
                                     updatePreviewCard(res);
                                     Sub2WidgetProvider.updateAllWidgets(MainActivity.this, res);
+                                    Sub2FullStatsWidgetProvider.updateAllWidgets(MainActivity.this, res);
                                     Sub2RealtimeService.start(MainActivity.this);
                                     Sub2RealtimeService.syncNow(MainActivity.this);
                                 } else {
@@ -372,19 +373,21 @@ public class MainActivity extends Activity {
                         public void run() {
                             progressBar.setVisibility(View.GONE);
                             if (res.isSuccess) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append("连接成功！\n");
-                                    sb.append("• 监控模式: ").append(res.modeTitle).append("\n");
-                                    sb.append("• 今日消费: ").append(res.todayCost).append("\n");
-                                    sb.append("• 今日请求: ").append(res.todayRequests).append(" 次\n");
-                                    sb.append("• 今日 Tokens: ").append(res.todayTokens).append("\n");
-                                sb.append("• 更新时间: ").append(res.lastUpdateTime).append("\n");
-                                sb.append("• 极速模式: 每 ").append(dataStore.getRefreshIntervalSeconds()).append(" 秒自动轮询已就绪！");
-                                tvTestResult.setTextColor(Color.parseColor("#34D399"));
-                                tvTestResult.setText(sb.toString());
-                                Toast.makeText(MainActivity.this, "连接成功！已同步至桌面小组件", Toast.LENGTH_SHORT).show();
-                                updatePreviewCard(res);
-                                Sub2WidgetProvider.updateAllWidgets(MainActivity.this, res);
+StringBuilder sb = new StringBuilder();
+                                 sb.append("连接成功！\n");
+                                 sb.append("• 监控模式: ").append(res.modeTitle).append("\n");
+                                 sb.append("• 今日消费: ").append(res.todayCost).append(" (").append(res.todayRequests).append(" 次请求)\n");
+                                 sb.append("• 累计消费: ").append(res.totalCost).append(" (").append(res.totalRequests).append(" 次请求)\n");
+                                 sb.append("• 累计 Tokens: ").append(res.totalTokens).append(" | 今日: ").append(res.todayTokens).append("\n");
+                                 sb.append("• 实时负载: ").append(res.rpm).append(" RPM | ").append(res.tpm).append(" TPM\n");
+                                 sb.append("• 更新时间: ").append(res.lastUpdateTime).append("\n");
+                                 sb.append("• 极速模式: 每 ").append(dataStore.getRefreshIntervalSeconds()).append(" 秒自动轮询已就绪！");
+                                 tvTestResult.setTextColor(Color.parseColor("#34D399"));
+                                 tvTestResult.setText(sb.toString());
+                                 Toast.makeText(MainActivity.this, "连接成功！已同步至桌面小组件", Toast.LENGTH_SHORT).show();
+                                 updatePreviewCard(res);
+                                 Sub2WidgetProvider.updateAllWidgets(MainActivity.this, res);
+                                 Sub2FullStatsWidgetProvider.updateAllWidgets(MainActivity.this, res);
                                 Sub2RealtimeService.start(MainActivity.this);
                                 Sub2RealtimeService.syncNow(MainActivity.this);
                             } else {
@@ -428,6 +431,7 @@ public class MainActivity extends Activity {
         Sub2DashboardData cached = dataStore.getCachedStats();
         updatePreviewCard(cached);
         Sub2WidgetProvider.updateAllWidgets(this, cached);
+        Sub2FullStatsWidgetProvider.updateAllWidgets(this, cached);
         Sub2RealtimeService.start(this);
         Sub2RealtimeService.syncNow(this);
         Sub2WidgetProvider.scheduleAutoAlarm(this);

@@ -20,6 +20,7 @@ public class Sub2JobService extends JobService {
                     Sub2ApiClient client = new Sub2ApiClient(store);
                     Sub2DashboardData fresh = client.fetchDashboardStats(true);
                     Sub2WidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
+                    Sub2FullStatsWidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
                 } catch (Exception ignored) {
                 } finally {
                     jobFinished(params, false);

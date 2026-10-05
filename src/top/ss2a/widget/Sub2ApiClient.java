@@ -258,20 +258,62 @@ public class Sub2ApiClient {
             if (target == null) target = root.optJSONObject("result");
             if (target == null) target = root;
 
-            // 今日消费优先使用 today_cost 或 today_actual_cost
-            double cost = optDouble(target, new String[]{"today_cost", "today_actual_cost", "today_amount", "daily_cost", "cost", "total_cost"});
-            data.todayCost = "$" + new DecimalFormat("0.00").format(cost);
+            // 1. 今日用量 (Today Stats)
+            double todayCostVal = optDouble(target, new String[]{"today_actual_cost", "today_cost", "today_amount", "daily_cost"});
+            data.todayCost = "$" + new DecimalFormat("0.00").format(todayCostVal);
 
-            // 今日请求次数
-            data.todayRequests = optLong(target, new String[]{"today_requests", "today_request_count", "requests", "total_requests"});
+            data.todayRequests = optLong(target, new String[]{"today_requests", "today_request_count"});
+            long todayTokensVal = optLong(target, new String[]{"today_tokens"});
+            data.todayTokens = formatTokens(todayTokensVal);
 
-            // 今日 Tokens
-            long tokens = optLong(target, new String[]{"today_tokens", "total_tokens", "tokens"});
-            data.todayTokens = formatTokens(tokens);
+            long todayInTokens = optLong(target, new String[]{"today_input_tokens"});
+            data.todayInputTokens = formatTokens(todayInTokens);
 
-            // 活跃用户 / 活跃 Key
-            data.activeUsers = optInt(target, new String[]{"today_new_users", "user_count", "total_users", "active_users"});
-            data.activeKeys = optInt(target, new String[]{"active_api_keys", "key_count", "total_keys", "active_keys"});
+            long todayOutTokens = optLong(target, new String[]{"today_output_tokens"});
+            data.todayOutputTokens = formatTokens(todayOutTokens);
+
+            long todayCacheTokens = optLong(target, new String[]{"today_cache_read_tokens"});
+            data.todayCacheReadTokens = formatTokens(todayCacheTokens);
+
+            // 2. 累计总用量 (Total / All-time Stats)
+            double totalCostVal = optDouble(target, new String[]{"total_actual_cost", "total_cost", "cost"});
+            if (totalCostVal == 0.0 && todayCostVal > 0.0) {
+                totalCostVal = todayCostVal;
+            }
+            data.totalCost = "$" + new DecimalFormat("0.00").format(totalCostVal);
+
+            data.totalRequests = optLong(target, new String[]{"total_requests", "requests"});
+            if (data.totalRequests == 0 && data.todayRequests > 0) {
+                data.totalRequests = data.todayRequests;
+            }
+
+            long totalTokensVal = optLong(target, new String[]{"total_tokens", "tokens"});
+            if (totalTokensVal == 0 && todayTokensVal > 0) {
+                totalTokensVal = todayTokensVal;
+            }
+            data.totalTokens = formatTokens(totalTokensVal);
+
+            long totalInTokens = optLong(target, new String[]{"total_input_tokens"});
+            data.totalInputTokens = formatTokens(totalInTokens);
+
+            long totalOutTokens = optLong(target, new String[]{"total_output_tokens"});
+            data.totalOutputTokens = formatTokens(totalOutTokens);
+
+            long totalCacheTokens = optLong(target, new String[]{"total_cache_read_tokens"});
+            data.totalCacheReadTokens = formatTokens(totalCacheTokens);
+
+            // 3. 实时负载与性能
+            data.rpm = optInt(target, new String[]{"rpm"});
+            long tpmVal = optLong(target, new String[]{"tpm"});
+            data.tpm = formatTokens(tpmVal);
+
+            double durationMs = optDouble(target, new String[]{"average_duration_ms", "duration_ms", "avg_latency"});
+            data.avgDuration = formatDuration(durationMs);
+
+            // 4. API 密钥与用户
+            data.totalKeys = optInt(target, new String[]{"total_api_keys", "key_count", "total_keys"});
+            data.activeKeys = optInt(target, new String[]{"active_api_keys", "active_keys"});
+            data.activeUsers = optInt(target, new String[]{"active_users", "user_count", "total_users", "today_new_users"});
         } catch (Exception e) {
             data.isSuccess = false;
             data.errorMessage = "数据解析异常";
@@ -305,6 +347,14 @@ public class Sub2ApiClient {
         if (t >= 1000000L) return String.format(Locale.US, "%.2fM", t / 1000000.0);
         if (t >= 1000L) return String.format(Locale.US, "%.1fK", t / 1000.0);
         return String.valueOf(t);
+    }
+
+    private String formatDuration(double ms) {
+        if (ms <= 0) return "0s";
+        if (ms >= 1000.0) {
+            return String.format(Locale.US, "%.1fs", ms / 1000.0);
+        }
+        return Math.round(ms) + "ms";
     }
 
     private String readStream(InputStream is) throws Exception {

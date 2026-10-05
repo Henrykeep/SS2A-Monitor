@@ -60,6 +60,19 @@ public class WidgetDataStore {
             .putString("cache_cost", data.todayCost)
             .putLong("cache_requests", data.todayRequests)
             .putString("cache_tokens", data.todayTokens)
+            .putString("cache_today_input_tokens", data.todayInputTokens)
+            .putString("cache_today_output_tokens", data.todayOutputTokens)
+            .putString("cache_today_cache_tokens", data.todayCacheReadTokens)
+            .putString("cache_total_cost", data.totalCost)
+            .putLong("cache_total_requests", data.totalRequests)
+            .putString("cache_total_tokens", data.totalTokens)
+            .putString("cache_total_input_tokens", data.totalInputTokens)
+            .putString("cache_total_output_tokens", data.totalOutputTokens)
+            .putString("cache_total_cache_tokens", data.totalCacheReadTokens)
+            .putInt("cache_rpm", data.rpm)
+            .putString("cache_tpm", data.tpm)
+            .putString("cache_avg_duration", data.avgDuration)
+            .putInt("cache_total_keys", data.totalKeys)
             .putInt("cache_users", data.activeUsers)
             .putInt("cache_keys", data.activeKeys)
             .putString("cache_update_time", data.lastUpdateTime)
@@ -74,6 +87,19 @@ public class WidgetDataStore {
         data.todayCost = prefs.getString("cache_cost", "$0.00");
         data.todayRequests = prefs.getLong("cache_requests", 0);
         data.todayTokens = prefs.getString("cache_tokens", "0");
+        data.todayInputTokens = prefs.getString("cache_today_input_tokens", "0");
+        data.todayOutputTokens = prefs.getString("cache_today_output_tokens", "0");
+        data.todayCacheReadTokens = prefs.getString("cache_today_cache_tokens", "0");
+        data.totalCost = prefs.getString("cache_total_cost", "$0.00");
+        data.totalRequests = prefs.getLong("cache_total_requests", 0);
+        data.totalTokens = prefs.getString("cache_total_tokens", "0");
+        data.totalInputTokens = prefs.getString("cache_total_input_tokens", "0");
+        data.totalOutputTokens = prefs.getString("cache_total_output_tokens", "0");
+        data.totalCacheReadTokens = prefs.getString("cache_total_cache_tokens", "0");
+        data.rpm = prefs.getInt("cache_rpm", 0);
+        data.tpm = prefs.getString("cache_tpm", "0");
+        data.avgDuration = prefs.getString("cache_avg_duration", "0s");
+        data.totalKeys = prefs.getInt("cache_total_keys", 0);
         data.activeUsers = prefs.getInt("cache_users", 0);
         data.activeKeys = prefs.getInt("cache_keys", 0);
         data.lastUpdateTime = prefs.getString("cache_update_time", "--:--");
