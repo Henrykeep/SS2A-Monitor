@@ -1,0 +1,226 @@
+package top.ss2a.widget;
+
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
+import android.os.PowerManager;
+
+public class Sub2RealtimeService extends Service {
+    public static final String ACTION_SYNC_NOW = "top.ss2a.widget.ACTION_SYNC_NOW";
+    private static final String CHANNEL_ID = "ss2a_monitor_service";
+    private static final int NOTIFICATION_ID = 9527;
+
+    private Handler handler;
+    private Runnable pollRunnable;
+    private BroadcastReceiver screenReceiver;
+    private boolean isScreenOn = true;
+    private boolean isRunning = false;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        handler = new Handler(Looper.getMainLooper());
+        createNotificationChannel();
+        startForegroundNotification("正在保持桌面小组件秒级实时同步");
+
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if (pm != null) {
+            isScreenOn = pm.isInteractive();
+        }
+
+        screenReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent == null) return;
+                String action = intent.getAction();
+                if (Intent.ACTION_SCREEN_ON.equals(action) || Intent.ACTION_USER_PRESENT.equals(action)) {
+                    isScreenOn = true;
+                    triggerAsyncSync(false);
+                    scheduleNextPoll();
+                } else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
+                    isScreenOn = false;
+                    scheduleNextPoll();
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_USER_PRESENT);
+        registerReceiver(screenReceiver, filter);
+
+        startPollingLoop();
+    }
+
+    private void startPollingLoop() {
+        if (isRunning) return;
+        isRunning = true;
+        pollRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (isRunning) {
+                    if (isScreenOn) {
+                        triggerAsyncSync(false);
+                    }
+                    scheduleNextPoll();
+                }
+            }
+        };
+        triggerAsyncSync(false);
+        scheduleNextPoll();
+    }
+
+    private void scheduleNextPoll() {
+        if (handler != null && pollRunnable != null) {
+            handler.removeCallbacks(pollRunnable);
+            WidgetDataStore store = new WidgetDataStore(this);
+            int intervalSec = store.getRefreshIntervalSeconds();
+            if (intervalSec < 5) intervalSec = 5;
+            long delayMs;
+            if (isScreenOn) {
+                delayMs = intervalSec * 1000L;
+            } else {
+                delayMs = Math.max(intervalSec * 1000L, 120 * 1000L);
+            }
+            handler.postDelayed(pollRunnable, delayMs);
+        }
+    }
+
+    private void triggerAsyncSync(final boolean forced) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    WidgetDataStore store = new WidgetDataStore(getApplicationContext());
+                    Sub2ApiClient client = new Sub2ApiClient(store);
+                    Sub2DashboardData fresh = client.fetchDashboardStats(forced);
+                    Sub2WidgetProvider.updateAllWidgets(getApplicationContext(), fresh);
+                    if (fresh.isSuccess) {
+                        updateForegroundNotification("今日消费: " + fresh.todayCost + " | 请求: " + fresh.todayRequests + "次");
+                    }
+                } catch (Exception ignored) {}
+            }
+        }).start();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null && ACTION_SYNC_NOW.equals(intent.getAction())) {
+            triggerAsyncSync(true);
+        } else {
+            triggerAsyncSync(false);
+        }
+        scheduleNextPoll();
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isRunning = false;
+        if (handler != null && pollRunnable != null) {
+            handler.removeCallbacks(pollRunnable);
+        }
+        if (screenReceiver != null) {
+            try {
+                unregisterReceiver(screenReceiver);
+            } catch (Exception ignored) {}
+        }
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                CHANNEL_ID,
+                "SS2A 实时监控同步",
+                NotificationManager.IMPORTANCE_MIN
+            );
+            channel.setDescription("保证桌面小组件能够极速高频获取最新数据");
+            channel.setShowBadge(false);
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm != null) {
+                nm.createNotificationChannel(channel);
+            }
+        }
+    }
+
+    private void startForegroundNotification(String text) {
+        Intent notifyIntent = new Intent(this, MainActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(
+            this, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        Notification.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder = new Notification.Builder(this, CHANNEL_ID);
+        } else {
+            builder = new Notification.Builder(this);
+        }
+        builder.setContentTitle("SS2A 实时监控")
+               .setContentText(text)
+               .setSmallIcon(android.R.drawable.ic_popup_sync)
+               .setContentIntent(pi)
+               .setOngoing(true);
+        startForeground(NOTIFICATION_ID, builder.build());
+    }
+
+    private void updateForegroundNotification(String text) {
+        try {
+            Intent notifyIntent = new Intent(this, MainActivity.class);
+            PendingIntent pi = PendingIntent.getActivity(
+                this, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            Notification.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                builder = new Notification.Builder(this, CHANNEL_ID);
+            } else {
+                builder = new Notification.Builder(this);
+            }
+            builder.setContentTitle("SS2A 实时监控")
+                   .setContentText(text)
+                   .setSmallIcon(android.R.drawable.ic_popup_sync)
+                   .setContentIntent(pi)
+                   .setOngoing(true);
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm != null) {
+                nm.notify(NOTIFICATION_ID, builder.build());
+            }
+        } catch (Exception ignored) {}
+    }
+
+    public static void start(Context context) {
+        try {
+            Intent intent = new Intent(context, Sub2RealtimeService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent);
+            } else {
+                context.startService(intent);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    public static void syncNow(Context context) {
+        try {
+            Intent intent = new Intent(context, Sub2RealtimeService.class);
+            intent.setAction(ACTION_SYNC_NOW);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent);
+            } else {
+                context.startService(intent);
+            }
+        } catch (Exception ignored) {}
+    }
+}

@@ -1,0 +1,321 @@
+package top.ss2a.widget;
+
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+public class Sub2ApiClient {
+    private final WidgetDataStore dataStore;
+
+    public Sub2ApiClient(WidgetDataStore dataStore) {
+        this.dataStore = dataStore;
+    }
+
+    public static String cleanBaseUrl(String input) {
+        if (input == null || input.trim().isEmpty()) return "https://ss2a.top";
+        String url = input.trim();
+        while (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
+        if (url.endsWith("/api/v1")) {
+            url = url.substring(0, url.length() - "/api/v1".length());
+        } else if (url.endsWith("/admin")) {
+            url = url.substring(0, url.length() - "/admin".length());
+        }
+        while (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            url = "https://" + url;
+        }
+        return url;
+    }
+
+    public String loginAdmin(String account, String password) throws Exception {
+        String baseUrl = cleanBaseUrl(dataStore.getServerUrl());
+        String loginUrl = baseUrl + "/api/v1/auth/login";
+
+        JSONObject payload = new JSONObject();
+        payload.put("email", account.trim());
+        payload.put("password", password);
+        byte[] postBytes = payload.toString().getBytes(StandardCharsets.UTF_8);
+
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL(loginUrl);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(10000);
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.setRequestProperty("Accept", "application/json");
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(postBytes);
+                os.flush();
+            }
+
+            int code = conn.getResponseCode();
+            InputStream is = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+            String body = readStream(is);
+
+            if (code >= 200 && code < 300) {
+                String token = extractToken(body);
+                if (token != null && !token.isEmpty()) {
+                    dataStore.setAdminAccount(account.trim());
+                    dataStore.setAdminPassword(password);
+                    dataStore.setAdminToken(token);
+                    return token;
+                } else {
+                    throw new Exception("登录成功但未提取到 Token: " + body);
+                }
+            } else {
+                String msg = parseErrorMsg(body, code);
+                throw new Exception(msg);
+            }
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    public Sub2DashboardData fetchDashboardStats(boolean allowRelogin) {
+        String baseUrl = cleanBaseUrl(dataStore.getServerUrl());
+        String token = dataStore.getAdminToken();
+
+        // 若无 Token 但有账号密码，先尝试登录
+        if ((token == null || token.isEmpty()) && !dataStore.getAdminAccount().isEmpty() && !dataStore.getAdminPassword().isEmpty()) {
+            try {
+                token = loginAdmin(dataStore.getAdminAccount(), dataStore.getAdminPassword());
+            } catch (Exception ignored) {}
+        }
+
+        if (token == null || token.isEmpty()) {
+            Sub2DashboardData err = new Sub2DashboardData();
+            err.isSuccess = false;
+            err.errorMessage = "未配置 Token，请先登录或手动填入";
+            return err;
+        }
+
+        String timeStr = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+
+        // 1. 优先尝试管理员全站接口
+        Sub2DashboardData adminData = requestStatsEndpoint(baseUrl + "/api/v1/admin/dashboard/stats", token, timeStr, true);
+        if (adminData.isSuccess) {
+            adminData.modeTitle = "全站监控";
+            dataStore.saveLatestStats(adminData);
+            return adminData;
+        }
+
+        // 2. 如果是 401 且允许重登，重登一次后再试
+        if ("UNAUTHORIZED".equals(adminData.errorMessage) && allowRelogin) {
+            if (!dataStore.getAdminAccount().isEmpty() && !dataStore.getAdminPassword().isEmpty()) {
+                try {
+                    token = loginAdmin(dataStore.getAdminAccount(), dataStore.getAdminPassword());
+                    return fetchDashboardStats(false);
+                } catch (Exception ignored) {}
+            }
+        }
+
+        // 3. 如果报 403 (Admin access required)，说明此账号是普通用户或非站长权限，自动拉取用户个人仪表盘！
+        boolean isForbidden = adminData.errorMessage != null && (
+            adminData.errorMessage.contains("403") ||
+            adminData.errorMessage.toLowerCase().contains("admin access") ||
+            adminData.errorMessage.toLowerCase().contains("forbidden")
+        );
+
+        if (isForbidden) {
+            Sub2DashboardData userData = requestStatsEndpoint(baseUrl + "/api/v1/usage/dashboard/stats", token, timeStr, false);
+            if (userData.isSuccess) {
+                userData.modeTitle = "个人用量";
+                dataStore.saveLatestStats(userData);
+                return userData;
+            }
+
+            // 备用个人用量接口
+            Sub2DashboardData fallbackUser = requestStatsEndpoint(baseUrl + "/api/v1/usage/stats", token, timeStr, false);
+            if (fallbackUser.isSuccess) {
+                fallbackUser.modeTitle = "个人用量";
+                dataStore.saveLatestStats(fallbackUser);
+                return fallbackUser;
+            }
+        }
+
+        // 4. 若最终均未成功，保留旧缓存，标记错误
+        Sub2DashboardData cached = dataStore.getCachedStats();
+        cached.isSuccess = false;
+        cached.errorMessage = adminData.errorMessage;
+        return cached;
+    }
+
+    private Sub2DashboardData requestStatsEndpoint(String endpointUrl, String token, String timeStr, boolean isAdminEndpoint) {
+        Sub2DashboardData data = new Sub2DashboardData();
+        data.lastUpdateTime = timeStr;
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL(endpointUrl);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(10000);
+            conn.setRequestProperty("Accept", "application/json");
+
+            String rawToken = token.trim();
+            if (rawToken.startsWith("Bearer ")) {
+                rawToken = rawToken.substring(7).trim();
+            }
+
+            // 智能区分 Token 类型：
+            // JWT 通常由三部分以点分隔组成
+            boolean isJwt = rawToken.contains(".") && rawToken.split("\\.").length >= 3;
+            if (isJwt) {
+                conn.setRequestProperty("Authorization", "Bearer " + rawToken);
+            } else {
+                // Admin API Key 格式（非 JWT 格式的自定义 Key）
+                conn.setRequestProperty("x-api-key", rawToken);
+                conn.setRequestProperty("Authorization", "Bearer " + rawToken);
+            }
+
+            int code = conn.getResponseCode();
+            if (code >= 200 && code < 300) {
+                String body = readStream(conn.getInputStream());
+                data = parseStatsJson(body, timeStr);
+                data.isSuccess = true;
+                return data;
+            } else {
+                if (code == 401) {
+                    data.isSuccess = false;
+                    data.errorMessage = "UNAUTHORIZED";
+                    return data;
+                }
+                InputStream errIs = conn.getErrorStream();
+                String errBody = readStream(errIs);
+                String msg = parseErrorMsg(errBody, code);
+                data.isSuccess = false;
+                data.errorMessage = msg;
+                return data;
+            }
+        } catch (Exception e) {
+            data.isSuccess = false;
+            data.errorMessage = e.getMessage() != null ? e.getMessage() : "网络请求失败";
+            return data;
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    private String extractToken(String jsonStr) {
+        try {
+            JSONObject root = new JSONObject(jsonStr);
+            JSONObject dataObj = root.optJSONObject("data");
+            if (dataObj == null) dataObj = root;
+            String t = dataObj.optString("access_token", "");
+            if (!t.isEmpty()) return t;
+            t = dataObj.optString("token", "");
+            if (!t.isEmpty()) return t;
+            t = dataObj.optString("jwt", "");
+            if (!t.isEmpty()) return t;
+            return root.optString("token", "");
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String parseErrorMsg(String body, int code) {
+        if (body != null && !body.isEmpty()) {
+            try {
+                JSONObject obj = new JSONObject(body);
+                if (obj.has("message")) {
+                    return obj.getString("message");
+                }
+                if (obj.has("error")) {
+                    return obj.getString("error");
+                }
+            } catch (Exception ignored) {}
+        }
+        if (code == 401) return "认证失败(401)：Token无效或已过期";
+        if (code == 403) return "权限不足(403)：Admin access required";
+        if (code == 404) return "接口不存在(404)：请检查服务器地址";
+        return "HTTP " + code;
+    }
+
+    private Sub2DashboardData parseStatsJson(String jsonStr, String timeStr) {
+        Sub2DashboardData data = new Sub2DashboardData();
+        data.lastUpdateTime = timeStr;
+        data.isSuccess = true;
+        try {
+            JSONObject root = new JSONObject(jsonStr);
+            JSONObject target = root.optJSONObject("data");
+            if (target == null) target = root.optJSONObject("result");
+            if (target == null) target = root;
+
+            // 今日消费优先使用 today_cost 或 today_actual_cost
+            double cost = optDouble(target, new String[]{"today_cost", "today_actual_cost", "today_amount", "daily_cost", "cost", "total_cost"});
+            data.todayCost = "$" + new DecimalFormat("0.00").format(cost);
+
+            // 今日请求次数
+            data.todayRequests = optLong(target, new String[]{"today_requests", "today_request_count", "requests", "total_requests"});
+
+            // 今日 Tokens
+            long tokens = optLong(target, new String[]{"today_tokens", "total_tokens", "tokens"});
+            data.todayTokens = formatTokens(tokens);
+
+            // 活跃用户 / 活跃 Key
+            data.activeUsers = optInt(target, new String[]{"today_new_users", "user_count", "total_users", "active_users"});
+            data.activeKeys = optInt(target, new String[]{"active_api_keys", "key_count", "total_keys", "active_keys"});
+        } catch (Exception e) {
+            data.isSuccess = false;
+            data.errorMessage = "数据解析异常";
+        }
+        return data;
+    }
+
+    private double optDouble(JSONObject obj, String[] keys) {
+        for (String k : keys) {
+            if (obj.has(k)) return obj.optDouble(k, 0.0);
+        }
+        return 0.0;
+    }
+
+    private long optLong(JSONObject obj, String[] keys) {
+        for (String k : keys) {
+            if (obj.has(k)) return obj.optLong(k, 0L);
+        }
+        return 0L;
+    }
+
+    private int optInt(JSONObject obj, String[] keys) {
+        for (String k : keys) {
+            if (obj.has(k)) return obj.optInt(k, 0);
+        }
+        return 0;
+    }
+
+    private String formatTokens(long t) {
+        if (t >= 1000000000L) return String.format(Locale.US, "%.2fB", t / 1000000000.0);
+        if (t >= 1000000L) return String.format(Locale.US, "%.2fM", t / 1000000.0);
+        if (t >= 1000L) return String.format(Locale.US, "%.1fK", t / 1000.0);
+        return String.valueOf(t);
+    }
+
+    private String readStream(InputStream is) throws Exception {
+        if (is == null) return "";
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+        }
+        reader.close();
+        return sb.toString();
+    }
+}
