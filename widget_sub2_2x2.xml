@@ -3,7 +3,7 @@
     android:id="@+id/widget_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1E1E2E"
+    android:background="@drawable/bg_widget_card"
     android:orientation="vertical"
     android:padding="12dp">
 
@@ -16,10 +16,10 @@
 
         <ImageView
             android:id="@+id/iv_status_dot"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
+            android:layout_width="7.5dp"
+            android:layout_height="7.5dp"
             android:layout_marginEnd="6dp"
-            android:src="@android:drawable/presence_online" />
+            android:src="@drawable/ic_dot_status" />
 
         <TextView
             android:layout_width="0dp"
@@ -34,9 +34,10 @@
             android:id="@+id/btn_refresh"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:background="?android:attr/selectableItemBackground"
+            android:background="@drawable/bg_widget_btn"
             android:contentDescription="刷新"
-            android:src="@android:drawable/ic_popup_sync" />
+            android:padding="4dp"
+            android:src="@drawable/ic_refresh" />
     </LinearLayout>
 
     <!-- 中部今日花费大字 -->
@@ -51,15 +52,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="今日消耗"
-            android:textColor="#BAC2DE"
-            android:textSize="10sp" />
+            android:textColor="#34D399"
+            android:textSize="9.5sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_today_cost"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:includeFontPadding="false"
             android:text="$0.00"
-            android:textColor="#A6E3A1"
+            android:textColor="#10B981"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -68,9 +72,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif-medium"
+            android:includeFontPadding="false"
             android:text="0 次请求"
-            android:textColor="#89B4FA"
-            android:textSize="12sp" />
+            android:textColor="#60A5FA"
+            android:textSize="11.5sp" />
     </LinearLayout>
 
     <!-- 底部更新时间 -->
@@ -79,7 +85,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
+        android:background="@drawable/bg_widget_tag"
+        android:paddingStart="6dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="6dp"
+        android:paddingBottom="2dp"
         android:text="--:--"
-        android:textColor="#6C7086"
-        android:textSize="10sp" />
+        android:textColor="#94A3B8"
+        android:textSize="9sp" />
 </LinearLayout>
