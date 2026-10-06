@@ -34,7 +34,8 @@
             android:text="SS2A · 全站监控"
             android:textColor="#F8FAFC"
             android:textSize="13.5sp"
-            android:textStyle="bold" />
+            android:textStyle="bold" 
+        android:includeFontPadding="false" />
 
         <TextView
             android:id="@+id/tv_update_time"
@@ -48,7 +49,8 @@
             android:paddingBottom="2.5dp"
             android:text="--:--"
             android:textColor="#94A3B8"
-            android:textSize="10sp" />
+            android:textSize="10sp" 
+        android:includeFontPadding="false" />
 
         <ImageButton
             android:id="@+id/btn_refresh"
@@ -80,7 +82,8 @@
         android:maxLines="1"
         android:textColor="#F87171"
         android:textSize="10sp"
-        android:visibility="gone" />
+        android:visibility="gone" 
+        android:includeFontPadding="false" />
 
     <!-- 核心指标大卡片区域 -->
     <LinearLayout
@@ -112,7 +115,8 @@
                 android:text="今日总消耗 (USD)"
                 android:textColor="#34D399"
                 android:textSize="9.5sp"
-                android:textStyle="bold" />
+                android:textStyle="bold" 
+        android:includeFontPadding="false" />
 
             <TextView
                 android:id="@+id/tv_today_cost"
@@ -134,7 +138,8 @@
                 android:layout_marginTop="1dp"
                 android:text="⚡ 秒级高频常驻同步"
                 android:textColor="#6EE7B7"
-                android:textSize="8.5sp" />
+                android:textSize="8.5sp" 
+        android:includeFontPadding="false" />
         </LinearLayout>
 
         <!-- 副卡片区域：调用次数 + Tokens 吞吐 -->
@@ -161,7 +166,8 @@
                     android:layout_height="wrap_content"
                     android:text="API 调用次数"
                     android:textColor="#93C5FD"
-                    android:textSize="9sp" />
+                    android:textSize="9sp" 
+        android:includeFontPadding="false" />
 
                 <TextView
                     android:id="@+id/tv_today_requests"
@@ -194,7 +200,8 @@
                     android:layout_height="wrap_content"
                     android:text="Token 吞吐量"
                     android:textColor="#FDBA74"
-                    android:textSize="9sp" />
+                    android:textSize="9sp" 
+        android:includeFontPadding="false" />
 
                 <TextView
                     android:id="@+id/tv_today_tokens"
@@ -225,7 +232,8 @@
             android:layout_weight="1"
             android:text="Sub2API 运营监控中心"
             android:textColor="#64748B"
-            android:textSize="9.5sp" />
+            android:textSize="9.5sp" 
+        android:includeFontPadding="false" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -238,6 +246,7 @@
             android:text="进入后台 ↗"
             android:textColor="#CBD5E1"
             android:textSize="9.5sp"
-            android:textStyle="bold" />
+            android:textStyle="bold" 
+        android:includeFontPadding="false" />
     </LinearLayout>
 </LinearLayout>

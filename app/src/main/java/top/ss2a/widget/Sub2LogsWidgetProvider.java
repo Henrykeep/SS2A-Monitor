@@ -164,6 +164,7 @@ public class Sub2LogsWidgetProvider extends AppWidgetProvider {
         // 成功状态或异常条指示灯
         if (stats != null && !stats.isSuccess) {
             views.setViewVisibility(R.id.tv_error_msg, View.VISIBLE);
+            views.setTextViewText(R.id.tv_error_msg, stats.errorMessage != null && !stats.errorMessage.isEmpty() ? stats.errorMessage : "同步异常");
             views.setInt(R.id.iv_status_dot, "setColorFilter", 0xFFEF4444); // 异常亮红灯
         } else {
             views.setViewVisibility(R.id.tv_error_msg, View.GONE);

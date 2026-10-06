@@ -116,7 +116,8 @@
         android:maxLines="1"
         android:textColor="#F87171"
         android:textSize="9sp"
-        android:visibility="gone" />
+        android:visibility="gone" 
+        android:includeFontPadding="false" />
 
     <!-- 2. 最近使用记录列表区域 (4条紧凑极客卡片，严格固定列宽网格对齐) -->
     <LinearLayout
@@ -514,5 +515,6 @@
         android:maxLines="1"
         android:text="今日: $0.00 (0次) · 0 RPM"
         android:textColor="#64748B"
-        android:textSize="10sp" />
+        android:textSize="10sp" 
+        android:includeFontPadding="false" />
 </LinearLayout>

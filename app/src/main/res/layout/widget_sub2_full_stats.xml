@@ -34,7 +34,8 @@
             android:text="SS2A · 全部用量看板"
             android:textColor="#F8FAFC"
             android:textSize="13sp"
-            android:textStyle="bold" />
+            android:textStyle="bold" 
+        android:includeFontPadding="false" />
 
         <TextView
             android:id="@+id/tv_update_time"
@@ -48,7 +49,8 @@
             android:paddingBottom="2dp"
             android:text="更新于 --:--"
             android:textColor="#94A3B8"
-            android:textSize="9.5sp" />
+            android:textSize="9.5sp" 
+        android:includeFontPadding="false" />
 
         <ImageButton
             android:id="@+id/btn_refresh"
@@ -80,7 +82,8 @@
         android:maxLines="1"
         android:textColor="#F87171"
         android:textSize="9.5sp"
-        android:visibility="gone" />
+        android:visibility="gone" 
+        android:includeFontPadding="false" />
 
     <!-- 2. 核心两大板块：今日用量卡片 VS 累计全量卡片 (高度自适应伸缩) -->
     <LinearLayout
@@ -110,7 +113,8 @@
                 android:text="今日用量 (USD)"
                 android:textColor="#34D399"
                 android:textSize="9sp"
-                android:textStyle="bold" />
+                android:textStyle="bold" 
+        android:includeFontPadding="false" />
 
             <TextView
                 android:id="@+id/tv_today_cost"
@@ -149,7 +153,8 @@
                     android:maxLines="1"
                     android:text="0次"
                     android:textColor="#93C5FD"
-                    android:textSize="10sp" />
+                    android:textSize="10sp" 
+        android:includeFontPadding="false" />
 
                 <TextView
                     android:id="@+id/tv_today_tokens"
@@ -160,7 +165,8 @@
                     android:text="0 Tok"
                     android:textColor="#FDBA74"
                     android:textSize="10sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold" 
+        android:includeFontPadding="false" />
             </LinearLayout>
         </LinearLayout>
 
@@ -183,7 +189,8 @@
                 android:text="累计全部用量 (USD)"
                 android:textColor="#C084FC"
                 android:textSize="9sp"
-                android:textStyle="bold" />
+                android:textStyle="bold" 
+        android:includeFontPadding="false" />
 
             <TextView
                 android:id="@+id/tv_total_cost"
@@ -222,7 +229,8 @@
                     android:maxLines="1"
                     android:text="0次"
                     android:textColor="#C4B5FD"
-                    android:textSize="10sp" />
+                    android:textSize="10sp" 
+        android:includeFontPadding="false" />
 
                 <TextView
                     android:id="@+id/tv_total_tokens"
@@ -233,7 +241,8 @@
                     android:text="0 Tok"
                     android:textColor="#FDBA74"
                     android:textSize="10sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold" 
+        android:includeFontPadding="false" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -329,6 +338,7 @@
             android:text="后台 ↗"
             android:textColor="#CBD5E1"
             android:textSize="9.5sp"
-            android:textStyle="bold" />
+            android:textStyle="bold" 
+        android:includeFontPadding="false" />
     </LinearLayout>
 </LinearLayout>

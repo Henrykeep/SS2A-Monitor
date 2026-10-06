@@ -162,6 +162,7 @@ public class Sub2LatencyWidgetProvider extends AppWidgetProvider {
             views.setViewVisibility(accountIds[0], View.GONE);
             views.setTextViewText(firstTokenIds[0], "--");
             views.setTextViewText(durationIds[0], "--");
+            views.setTextColor(durationIds[0], 0xFF34D399);
             views.setTextViewText(timeIds[0], updateTime);
             views.setViewVisibility(layoutIds[0], View.VISIBLE);
             views.setViewVisibility(layoutIds[1], View.GONE);
@@ -172,6 +173,7 @@ public class Sub2LatencyWidgetProvider extends AppWidgetProvider {
         // 成功状态或异常条指示灯
         if (stats != null && !stats.isSuccess) {
             views.setViewVisibility(R.id.tv_error_msg, View.VISIBLE);
+            views.setTextViewText(R.id.tv_error_msg, stats.errorMessage != null && !stats.errorMessage.isEmpty() ? stats.errorMessage : "同步异常");
             views.setInt(R.id.iv_status_dot, "setColorFilter", 0xFFEF4444);
         } else {
             views.setViewVisibility(R.id.tv_error_msg, View.GONE);
