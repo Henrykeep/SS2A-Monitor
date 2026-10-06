@@ -373,6 +373,11 @@ public class Sub2ApiClient {
                 rawToken = rawToken.substring(7).trim();
             }
             conn.setRequestProperty("Authorization", "Bearer " + rawToken);
+            boolean isJwt = rawToken.contains(".") && rawToken.split("\\.").length >= 3;
+            if (!isJwt) {
+                conn.setRequestProperty("x-api-key", rawToken);
+                conn.setRequestProperty("apikey", rawToken);
+            }
 
             int code = conn.getResponseCode();
             if (code >= 200 && code < 300) {
@@ -448,14 +453,22 @@ public class Sub2ApiClient {
     private String formatLogTime(String isoTime) {
         if (isoTime == null || isoTime.trim().isEmpty()) return "--:--";
         try {
-            // 兼容 ISO 格式: 2026-10-05T19:49:41.625551+08:00 或带空格格式 2026-10-05 19:49:41
-            int tIndex = isoTime.indexOf('T');
+            String s = isoTime.trim();
+            if (s.matches("^[0-9]{10,13}$")) {
+                try {
+                    long ts = Long.parseLong(s);
+                    if (s.length() == 10) ts *= 1000L;
+                    return new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date(ts));
+                } catch (Exception ignored) {}
+            }
+            int tIndex = s.indexOf("T");
             if (tIndex < 0) {
-                tIndex = isoTime.indexOf(' ');
+                tIndex = s.indexOf(" ");
             }
-            if (tIndex >= 0 && isoTime.length() >= tIndex + 9) {
-                return isoTime.substring(tIndex + 1, tIndex + 9);
+            if (tIndex >= 0 && s.length() >= tIndex + 9) {
+                return s.substring(tIndex + 1, tIndex + 9);
             }
+            return s;
         } catch (Exception ignored) {}
         return isoTime;
     }
