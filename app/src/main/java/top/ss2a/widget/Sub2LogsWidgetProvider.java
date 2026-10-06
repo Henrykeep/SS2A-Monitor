@@ -119,8 +119,8 @@ public class Sub2LogsWidgetProvider extends AppWidgetProvider {
                     Sub2LogItem item = logs.get(i);
                     views.setViewVisibility(layoutIds[i], View.VISIBLE);
 
-                    // 1. 模型名优雅修剪 (去除前缀供应商和冗余版本号)
-                    String mName = item.displayModel != null && !item.displayModel.isEmpty() ? item.displayModel : Sub2LogItem.cleanModelName(item.model);
+                    // 1. 模型名完整展示 (不接受截断，忠实保留实际请求模型名)
+                    String mName = (item.model != null && !item.model.trim().isEmpty()) ? item.model.trim() : (item.displayModel != null ? item.displayModel : "未知模型");
                     views.setTextViewText(modelIds[i], mName);
 
                     views.setTextViewText(tokenIds[i], item.tokensSummary);

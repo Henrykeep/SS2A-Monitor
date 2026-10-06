@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.zip.GZIPInputStream;
 
 public class Sub2ApiClient {
     private final WidgetDataStore dataStore;
@@ -64,6 +65,7 @@ public class Sub2ApiClient {
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Accept-Encoding", "gzip");
 
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(postBytes);
@@ -72,7 +74,7 @@ public class Sub2ApiClient {
 
             int code = conn.getResponseCode();
             InputStream is = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
-            String body = readStream(is);
+            String body = readStream(wrapStream(conn, is));
 
             if (code >= 200 && code < 300) {
                 String token = extractToken(body);
@@ -174,6 +176,7 @@ public class Sub2ApiClient {
             conn.setConnectTimeout(10000);
             conn.setReadTimeout(10000);
             conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Accept-Encoding", "gzip");
 
             String rawToken = token.trim();
             if (rawToken.startsWith("Bearer ")) {
@@ -190,7 +193,7 @@ public class Sub2ApiClient {
 
             int code = conn.getResponseCode();
             if (code >= 200 && code < 300) {
-                String body = readStream(conn.getInputStream());
+                String body = readStream(wrapStream(conn, conn.getInputStream()));
                 data = parseStatsJson(body, timeStr);
                 data.isSuccess = true;
                 return data;
@@ -201,7 +204,7 @@ public class Sub2ApiClient {
                     return data;
                 }
                 InputStream errIs = conn.getErrorStream();
-                String errBody = readStream(errIs);
+                String errBody = readStream(wrapStream(conn, errIs));
                 String msg = parseErrorMsg(errBody, code);
                 data.isSuccess = false;
                 data.errorMessage = msg;
@@ -379,6 +382,7 @@ public class Sub2ApiClient {
             conn.setConnectTimeout(8000);
             conn.setReadTimeout(8000);
             conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Accept-Encoding", "gzip");
 
             String rawToken = token.trim();
             if (rawToken.startsWith("Bearer ")) {
@@ -393,7 +397,7 @@ public class Sub2ApiClient {
 
             int code = conn.getResponseCode();
             if (code >= 200 && code < 300) {
-                String body = readStream(conn.getInputStream());
+                String body = readStream(wrapStream(conn, conn.getInputStream()));
                 JSONObject root = new JSONObject(body);
                 JSONObject dataObj = root.optJSONObject("data");
                 JSONArray items = dataObj != null ? dataObj.optJSONArray("items") : null;
@@ -470,7 +474,7 @@ public class Sub2ApiClient {
     }
 
     private String formatLogTime(String isoTime) {
-        if (isoTime == null || isoTime.trim().isEmpty()) return "--:--";
+        if (isoTime == null || isoTime.trim().isEmpty()) return "--:--:--";
         try {
             String s = isoTime.trim();
             if (s.matches("^[0-9]{10,13}$")) {
@@ -478,6 +482,28 @@ public class Sub2ApiClient {
                     long ts = Long.parseLong(s);
                     if (s.length() == 10) ts *= 1000L;
                     return new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date(ts));
+                } catch (Exception ignored) {}
+            }
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                try {
+                    java.time.Instant instant = java.time.Instant.parse(s);
+                    java.time.ZonedDateTime local = instant.atZone(java.time.ZoneId.systemDefault());
+                    return local.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
+                } catch (Exception ignored) {}
+            }
+            String[] patterns = {
+                "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+                "yyyy-MM-dd'T'HH:mm:ssX",
+                "yyyy-MM-dd'T'HH:mm:ss",
+                "yyyy-MM-dd HH:mm:ss"
+            };
+            for (String p : patterns) {
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat(p, Locale.US);
+                    Date d = sdf.parse(s);
+                    if (d != null) {
+                        return new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(d);
+                    }
                 } catch (Exception ignored) {}
             }
             int tIndex = s.indexOf("T");
@@ -511,5 +537,16 @@ public class Sub2ApiClient {
         }
         reader.close();
         return sb.toString();
+    }
+
+    private InputStream wrapStream(HttpURLConnection conn, InputStream raw) {
+        if (raw == null) return null;
+        try {
+            String encoding = conn.getContentEncoding();
+            if (encoding != null && encoding.toLowerCase(Locale.ROOT).contains("gzip")) {
+                return new GZIPInputStream(raw);
+            }
+        } catch (Exception ignored) {}
+        return raw;
     }
 }

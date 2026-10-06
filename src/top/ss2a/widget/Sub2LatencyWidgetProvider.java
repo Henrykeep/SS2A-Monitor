@@ -126,8 +126,8 @@ public class Sub2LatencyWidgetProvider extends AppWidgetProvider {
                     Sub2LogItem item = logs.get(i);
                     views.setViewVisibility(layoutIds[i], View.VISIBLE);
 
-                    // 1. 模型名舒展完整显示
-                    String mName = item.displayModel != null && !item.displayModel.isEmpty() ? item.displayModel : Sub2LogItem.cleanModelName(item.model);
+                    // 1. 模型名舒展完整显示 (不接受截断，忠实保留实际请求模型名)
+                    String mName = (item.model != null && !item.model.trim().isEmpty()) ? item.model.trim() : (item.displayModel != null ? item.displayModel : "未知模型");
                     views.setTextViewText(modelIds[i], mName);
 
                     // 2. 首字延迟 (天蓝色，统一以 0.0s 秒级 monospace 展示)
