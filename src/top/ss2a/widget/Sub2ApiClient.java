@@ -353,12 +353,24 @@ public class Sub2ApiClient {
     }
 
     public List<Sub2LogItem> fetchRecentLogs(int limit) {
-        List<Sub2LogItem> list = new ArrayList<>();
         String baseUrl = cleanBaseUrl(dataStore.getServerUrl());
         String token = dataStore.getAdminToken();
-        if (token == null || token.isEmpty()) return list;
+        if (token == null || token.isEmpty()) return new ArrayList<>();
 
-        String endpointUrl = baseUrl + "/api/v1/usage?page=1&page_size=" + Math.max(limit, 5);
+        boolean preferAdmin = "全站监控".equals(dataStore.getCachedStats().modeTitle);
+        int pageSize = Math.max(limit, 5);
+        if (preferAdmin) {
+            List<Sub2LogItem> adminLogs = requestUsageLogs(baseUrl + "/api/v1/admin/usage?page=1&page_size=" + pageSize, token, limit);
+            if (!adminLogs.isEmpty()) {
+                return adminLogs;
+            }
+        }
+        // 普通用户端点兜底拉取
+        return requestUsageLogs(baseUrl + "/api/v1/usage?page=1&page_size=" + pageSize, token, limit);
+    }
+
+    private List<Sub2LogItem> requestUsageLogs(String endpointUrl, String token, int limit) {
+        List<Sub2LogItem> list = new ArrayList<>();
         HttpURLConnection conn = null;
         try {
             URL url = new URL(endpointUrl);
@@ -428,8 +440,15 @@ public class Sub2ApiClient {
                             } else {
                                 accountStr = itemObj.optString("channel", "").trim();
                             }
-                        } else if (itemObj.has("upstream_name")) {
-                            accountStr = itemObj.optString("upstream_name", "").trim();
+                        } else if (itemObj.has("upstream_name") && !itemObj.optString("upstream_name").trim().isEmpty()) {
+                            accountStr = itemObj.optString("upstream_name").trim();
+                        } else if (itemObj.has("upstream")) {
+                            JSONObject upObj = itemObj.optJSONObject("upstream");
+                            if (upObj != null) {
+                                accountStr = upObj.optString("name", upObj.optString("title", "")).trim();
+                            } else {
+                                accountStr = itemObj.optString("upstream", "").trim();
+                            }
                         }
 
                         Sub2LogItem logItem = new Sub2LogItem(id, model, timeStr, costStr, durationStr, tokensStr);

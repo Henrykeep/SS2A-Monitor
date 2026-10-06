@@ -165,37 +165,27 @@ public class Sub2WidgetProvider extends AppWidgetProvider {
             context, 0, refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.btn_refresh, pRefresh);
 
-        String baseUrl = Sub2ApiClient.cleanBaseUrl(store.getServerUrl());
-        boolean isAdmin = "全站监控".equals(data.modeTitle);
-        String adminHome = isAdmin ? baseUrl + "/admin" : baseUrl + "/dashboard";
-        String logsUrl = isAdmin ? baseUrl + "/admin/usage" : baseUrl + "/usage";
-        String accountsUrl = isAdmin ? baseUrl + "/admin/accounts" : baseUrl + "/my-accounts";
+        String baseUrl = store.getServerUrl();
+        boolean isAdmin = Sub2Router.isAdminMode(data, store);
+        String dashboardUrl = Sub2Router.getDashboardUrl(baseUrl, isAdmin);
+        String usageUrl = Sub2Router.getUsageUrl(baseUrl, isAdmin);
+        String accountsUrl = Sub2Router.getAccountsUrl(baseUrl, isAdmin);
 
-        // 1. 底栏与整卡主体：直达控制台首页
-        Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(adminHome));
-        openWeb.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pWeb = PendingIntent.getActivity(
-            context, 1, openWeb, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        // 1. 底栏与整卡主体：直达控制台首页 (/admin 或 /dashboard)
+        PendingIntent pWeb = Sub2Router.createWebPendingIntent(context, 1, dashboardUrl);
         views.setOnClickPendingIntent(R.id.widget_container, pWeb);
         views.setOnClickPendingIntent(R.id.btn_enter_admin, pWeb);
 
-        // 2. 主卡片（今日总消耗）：直达中转后台日志明细
-        Intent openLogs = new Intent(Intent.ACTION_VIEW, Uri.parse(logsUrl));
-        openLogs.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pLogs = PendingIntent.getActivity(
-            context, 3, openLogs, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        // 2. 主卡片（今日总消耗）：直达中转后台调用日志与明细 (/admin/usage 或 /usage)
+        PendingIntent pLogs = Sub2Router.createWebPendingIntent(context, 3, usageUrl);
         views.setOnClickPendingIntent(R.id.card_today_cost, pLogs);
 
-        // 3. 上副卡（调用次数）：直达中转后台日志明细
-        PendingIntent pReqs = PendingIntent.getActivity(
-            context, 4, openLogs, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        // 3. 上副卡（调用次数）：直达中转后台调用日志与明细 (/admin/usage 或 /usage)
+        PendingIntent pReqs = Sub2Router.createWebPendingIntent(context, 4, usageUrl);
         views.setOnClickPendingIntent(R.id.card_today_requests, pReqs);
 
-        // 4. 下副卡（Token 吞吐量）：直达中转后台渠道/用量
-        Intent openAccounts = new Intent(Intent.ACTION_VIEW, Uri.parse(accountsUrl));
-        openAccounts.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pAccounts = PendingIntent.getActivity(
-            context, 5, openAccounts, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        // 4. 下副卡（Token 吞吐量）：直达中转后台渠道/账号管理 (/admin/accounts 或 /my-accounts)
+        PendingIntent pAccounts = Sub2Router.createWebPendingIntent(context, 5, accountsUrl);
         views.setOnClickPendingIntent(R.id.card_today_tokens, pAccounts);
 
         Intent settingsIntent = new Intent(context, MainActivity.class);

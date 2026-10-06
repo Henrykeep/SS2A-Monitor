@@ -48,7 +48,9 @@ public class Sub2ApiClient {
         String loginUrl = baseUrl + "/api/v1/auth/login";
 
         JSONObject payload = new JSONObject();
-        payload.put("email", account.trim());
+        String acc = account.trim();
+        payload.put("email", acc);
+        payload.put("username", acc);
         payload.put("password", password);
         byte[] postBytes = payload.toString().getBytes(StandardCharsets.UTF_8);
 
@@ -129,9 +131,10 @@ public class Sub2ApiClient {
             }
         }
 
-        // 3. 如果报 403 (Admin access required)，说明此账号是普通用户或非站长权限，自动拉取用户个人仪表盘！
+        // 3. 如果报 403 (Admin access required) 或 404，说明此账号是普通用户或系统部署为非admin路由，自动优雅降级拉取个人仪表盘！
         boolean isForbidden = adminData.errorMessage != null && (
             adminData.errorMessage.contains("403") ||
+            adminData.errorMessage.contains("404") ||
             adminData.errorMessage.toLowerCase().contains("admin access") ||
             adminData.errorMessage.toLowerCase().contains("forbidden")
         );
@@ -177,15 +180,12 @@ public class Sub2ApiClient {
                 rawToken = rawToken.substring(7).trim();
             }
 
-            // 智能区分 Token 类型：
-            // JWT 通常由三部分以点分隔组成
+            // 智能兼容多种认证头格式：JWT Token、自定义 x-api-key 以及标准 Bearer
             boolean isJwt = rawToken.contains(".") && rawToken.split("\\.").length >= 3;
-            if (isJwt) {
-                conn.setRequestProperty("Authorization", "Bearer " + rawToken);
-            } else {
-                // Admin API Key 格式（非 JWT 格式的自定义 Key）
+            conn.setRequestProperty("Authorization", "Bearer " + rawToken);
+            if (!isJwt) {
                 conn.setRequestProperty("x-api-key", rawToken);
-                conn.setRequestProperty("Authorization", "Bearer " + rawToken);
+                conn.setRequestProperty("apikey", rawToken);
             }
 
             int code = conn.getResponseCode();
@@ -353,12 +353,24 @@ public class Sub2ApiClient {
     }
 
     public List<Sub2LogItem> fetchRecentLogs(int limit) {
-        List<Sub2LogItem> list = new ArrayList<>();
         String baseUrl = cleanBaseUrl(dataStore.getServerUrl());
         String token = dataStore.getAdminToken();
-        if (token == null || token.isEmpty()) return list;
+        if (token == null || token.isEmpty()) return new ArrayList<>();
 
-        String endpointUrl = baseUrl + "/api/v1/usage?page=1&page_size=" + Math.max(limit, 5);
+        boolean preferAdmin = "全站监控".equals(dataStore.getCachedStats().modeTitle);
+        int pageSize = Math.max(limit, 5);
+        if (preferAdmin) {
+            List<Sub2LogItem> adminLogs = requestUsageLogs(baseUrl + "/api/v1/admin/usage?page=1&page_size=" + pageSize, token, limit);
+            if (!adminLogs.isEmpty()) {
+                return adminLogs;
+            }
+        }
+        // 普通用户端点兜底拉取
+        return requestUsageLogs(baseUrl + "/api/v1/usage?page=1&page_size=" + pageSize, token, limit);
+    }
+
+    private List<Sub2LogItem> requestUsageLogs(String endpointUrl, String token, int limit) {
+        List<Sub2LogItem> list = new ArrayList<>();
         HttpURLConnection conn = null;
         try {
             URL url = new URL(endpointUrl);
@@ -373,6 +385,11 @@ public class Sub2ApiClient {
                 rawToken = rawToken.substring(7).trim();
             }
             conn.setRequestProperty("Authorization", "Bearer " + rawToken);
+            boolean isJwt = rawToken.contains(".") && rawToken.split("\\.").length >= 3;
+            if (!isJwt) {
+                conn.setRequestProperty("x-api-key", rawToken);
+                conn.setRequestProperty("apikey", rawToken);
+            }
 
             int code = conn.getResponseCode();
             if (code >= 200 && code < 300) {
@@ -423,8 +440,15 @@ public class Sub2ApiClient {
                             } else {
                                 accountStr = itemObj.optString("channel", "").trim();
                             }
-                        } else if (itemObj.has("upstream_name")) {
-                            accountStr = itemObj.optString("upstream_name", "").trim();
+                        } else if (itemObj.has("upstream_name") && !itemObj.optString("upstream_name").trim().isEmpty()) {
+                            accountStr = itemObj.optString("upstream_name").trim();
+                        } else if (itemObj.has("upstream")) {
+                            JSONObject upObj = itemObj.optJSONObject("upstream");
+                            if (upObj != null) {
+                                accountStr = upObj.optString("name", upObj.optString("title", "")).trim();
+                            } else {
+                                accountStr = itemObj.optString("upstream", "").trim();
+                            }
                         }
 
                         Sub2LogItem logItem = new Sub2LogItem(id, model, timeStr, costStr, durationStr, tokensStr);
@@ -446,13 +470,24 @@ public class Sub2ApiClient {
     }
 
     private String formatLogTime(String isoTime) {
-        if (isoTime == null || isoTime.isEmpty()) return "--:--";
+        if (isoTime == null || isoTime.trim().isEmpty()) return "--:--";
         try {
-            // ISO 格式: 2026-10-05T19:49:41.625551+08:00
-            int tIndex = isoTime.indexOf('T');
-            if (tIndex >= 0 && isoTime.length() >= tIndex + 9) {
-                return isoTime.substring(tIndex + 1, tIndex + 9);
+            String s = isoTime.trim();
+            if (s.matches("^[0-9]{10,13}$")) {
+                try {
+                    long ts = Long.parseLong(s);
+                    if (s.length() == 10) ts *= 1000L;
+                    return new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date(ts));
+                } catch (Exception ignored) {}
             }
+            int tIndex = s.indexOf("T");
+            if (tIndex < 0) {
+                tIndex = s.indexOf(" ");
+            }
+            if (tIndex >= 0 && s.length() >= tIndex + 9) {
+                return s.substring(tIndex + 1, tIndex + 9);
+            }
+            return s;
         } catch (Exception ignored) {}
         return isoTime;
     }

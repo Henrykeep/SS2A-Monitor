@@ -181,7 +181,11 @@ public class Sub2LatencyWidgetProvider extends AppWidgetProvider {
         }
 
         // 点击交互跳转
-        String baseUrl = Sub2ApiClient.cleanBaseUrl(store.getServerUrl());
+        String baseUrl = store.getServerUrl();
+        boolean isAdmin = Sub2Router.isAdminMode(stats, store);
+        String dashboardUrl = Sub2Router.getDashboardUrl(baseUrl, isAdmin);
+        String usageUrl = Sub2Router.getUsageUrl(baseUrl, isAdmin);
+        String accountsUrl = Sub2Router.getAccountsUrl(baseUrl, isAdmin);
 
         Intent refreshIntent = new Intent(context, Sub2WidgetProvider.class);
         refreshIntent.setAction(Sub2WidgetProvider.ACTION_MANUAL_REFRESH);
@@ -194,27 +198,20 @@ public class Sub2LatencyWidgetProvider extends AppWidgetProvider {
             context, 31, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.btn_settings, pSettings);
 
-        Intent openAccounts = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + "/admin/accounts"));
-        openAccounts.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pAccounts = PendingIntent.getActivity(
-            context, 33, openAccounts, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        // 3. 点击顶部账户胶囊：直达渠道与账号管理 (/admin/accounts 或 /my-accounts)
+        PendingIntent pAccounts = Sub2Router.createWebPendingIntent(context, 33, accountsUrl);
         views.setOnClickPendingIntent(R.id.tv_top_account, pAccounts);
 
-        Intent openLogs = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + "/admin/logs"));
-        openLogs.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pLogs = PendingIntent.getActivity(
-            context, 34, openLogs, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        // 4. 点击 4 条性能耗时行：直达调用明细与使用日志 (/admin/usage 或 /usage)
+        PendingIntent pLogs = Sub2Router.createWebPendingIntent(context, 34, usageUrl);
         for (int lId : layoutIds) {
             views.setOnClickPendingIntent(lId, pLogs);
         }
 
-        Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + "/admin"));
-        openWeb.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pWeb = PendingIntent.getActivity(
-            context, 32, openWeb, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        // 5. 点击底部汇总与整卡底板：直达控制台/大盘 (/admin 或 /dashboard)
+        PendingIntent pWeb = Sub2Router.createWebPendingIntent(context, 32, dashboardUrl);
         views.setOnClickPendingIntent(R.id.tv_bottom_summary, pWeb);
         views.setOnClickPendingIntent(R.id.widget_container, pWeb);
-
         mgr.updateAppWidget(id, views);
     }
 }

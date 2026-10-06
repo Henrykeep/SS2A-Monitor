@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Sub2RealtimeService extends Service {
     public static final String ACTION_SYNC_NOW = "top.ss2a.widget.ACTION_SYNC_NOW";
@@ -27,6 +28,7 @@ public class Sub2RealtimeService extends Service {
     private BroadcastReceiver screenReceiver;
     private boolean isScreenOn = true;
     private boolean isRunning = false;
+    private final AtomicBoolean isSyncing = new AtomicBoolean(false);
 
     @Override
     public void onCreate() {
@@ -100,6 +102,9 @@ public class Sub2RealtimeService extends Service {
     }
 
     private void triggerAsyncSync(final boolean forced) {
+        if (!isSyncing.compareAndSet(false, true)) {
+            return;
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -122,7 +127,10 @@ public class Sub2RealtimeService extends Service {
                     } else if (fresh.errorMessage != null && !fresh.errorMessage.isEmpty()) {
                         updateForegroundNotification("SS2A 监控: " + fresh.errorMessage);
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                } finally {
+                    isSyncing.set(false);
+                }
             }
         }).start();
     }
