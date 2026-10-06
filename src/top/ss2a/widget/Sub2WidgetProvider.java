@@ -167,9 +167,9 @@ public class Sub2WidgetProvider extends AppWidgetProvider {
 
         String baseUrl = Sub2ApiClient.cleanBaseUrl(store.getServerUrl());
         boolean isAdmin = "全站监控".equals(data.modeTitle);
-        String adminHome = isAdmin ? baseUrl + "/admin" : baseUrl;
-        String logsUrl = isAdmin ? baseUrl + "/admin/logs" : baseUrl + "/usage/logs";
-        String accountsUrl = isAdmin ? baseUrl + "/admin/accounts" : baseUrl + "/usage";
+        String adminHome = isAdmin ? baseUrl + "/admin" : baseUrl + "/dashboard";
+        String logsUrl = isAdmin ? baseUrl + "/admin/usage" : baseUrl + "/usage";
+        String accountsUrl = isAdmin ? baseUrl + "/admin/accounts" : baseUrl + "/my-accounts";
 
         // 1. 底栏与整卡主体：直达控制台首页
         Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(adminHome));

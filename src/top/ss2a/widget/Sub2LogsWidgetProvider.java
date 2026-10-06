@@ -174,9 +174,9 @@ public class Sub2LogsWidgetProvider extends AppWidgetProvider {
         // ==================== 交互直达优化 ====================
         String baseUrl = Sub2ApiClient.cleanBaseUrl(store.getServerUrl());
         boolean isAdmin = stats == null || "全站监控".equals(stats.modeTitle);
-        String adminHome = isAdmin ? baseUrl + "/admin" : baseUrl;
-        String logsUrl = isAdmin ? baseUrl + "/admin/logs" : baseUrl + "/usage/logs";
-        String accountsUrl = isAdmin ? baseUrl + "/admin/accounts" : baseUrl + "/usage";
+        String adminHome = isAdmin ? baseUrl + "/admin" : baseUrl + "/dashboard";
+        String logsUrl = isAdmin ? baseUrl + "/admin/usage" : baseUrl + "/usage";
+        String accountsUrl = isAdmin ? baseUrl + "/admin/accounts" : baseUrl + "/my-accounts";
 
         // 1. 点击刷新按钮
         Intent refreshIntent = new Intent(context, Sub2WidgetProvider.class);

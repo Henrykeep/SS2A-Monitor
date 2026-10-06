@@ -113,10 +113,10 @@ public class Sub2FullStatsWidgetProvider extends AppWidgetProvider {
 
         String baseUrl = Sub2ApiClient.cleanBaseUrl(store.getServerUrl());
         boolean isAdmin = "全站监控".equals(data.modeTitle);
-        String adminHome = isAdmin ? baseUrl + "/admin" : baseUrl;
-        String logsUrl = isAdmin ? baseUrl + "/admin/logs" : baseUrl + "/usage/logs";
-        String accountsUrl = isAdmin ? baseUrl + "/admin/accounts" : baseUrl + "/usage";
-        String keysUrl = isAdmin ? baseUrl + "/admin/keys" : baseUrl + "/tokens";
+        String adminHome = isAdmin ? baseUrl + "/admin" : baseUrl + "/dashboard";
+        String logsUrl = isAdmin ? baseUrl + "/admin/usage" : baseUrl + "/usage";
+        String accountsUrl = isAdmin ? baseUrl + "/admin/accounts" : baseUrl + "/my-accounts";
+        String keysUrl = isAdmin ? baseUrl + "/keys" : baseUrl + "/keys";
 
         // 整卡底板与底栏进入后台微胶囊：直达中转站首页/控制台
         Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(adminHome));
