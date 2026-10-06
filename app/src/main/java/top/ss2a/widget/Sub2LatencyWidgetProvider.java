@@ -136,7 +136,6 @@ public class Sub2LatencyWidgetProvider extends AppWidgetProvider {
                     // 3. 总耗时：>= 10s 警告珊瑚红，普通翡翠绿
                     String durStr = (item.duration != null && !item.duration.isEmpty()) ? item.duration : (item.durationMs > 0 ? String.format(java.util.Locale.US, "%.1fs", item.durationMs / 1000.0) : "0.0s");
                     views.setTextViewText(durationIds[i], durStr);
-                    views.setTextViewText(durationIds[i], durStr);
                     if (item.durationMs >= 10000) {
                         views.setTextColor(durationIds[i], 0xFFFB7185); // 珊瑚红警告
                     } else {
@@ -182,8 +181,8 @@ public class Sub2LatencyWidgetProvider extends AppWidgetProvider {
         // 点击交互跳转
         String baseUrl = Sub2ApiClient.cleanBaseUrl(store.getServerUrl());
 
-        Intent refreshIntent = new Intent(context, Sub2LatencyWidgetProvider.class);
-        refreshIntent.setAction(ACTION_MANUAL_REFRESH);
+        Intent refreshIntent = new Intent(context, Sub2WidgetProvider.class);
+        refreshIntent.setAction(Sub2WidgetProvider.ACTION_MANUAL_REFRESH);
         PendingIntent pRefresh = PendingIntent.getBroadcast(
             context, 30, refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.btn_refresh, pRefresh);

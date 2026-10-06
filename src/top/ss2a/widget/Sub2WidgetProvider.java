@@ -57,6 +57,7 @@ public class Sub2WidgetProvider extends AppWidgetProvider {
             if (ids != null && ids.length > 0) {
                 RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_sub2_4x2);
                 views.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
+                views.setInt(R.id.iv_status_dot, "setColorFilter", 0xFF38BDF8);
                 mgr.partiallyUpdateAppWidget(ids, views);
             }
 
@@ -65,6 +66,7 @@ public class Sub2WidgetProvider extends AppWidgetProvider {
             if (idsFull != null && idsFull.length > 0) {
                 RemoteViews viewsFull = new RemoteViews(context.getPackageName(), R.layout.widget_sub2_full_stats);
                 viewsFull.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
+                viewsFull.setInt(R.id.iv_status_dot, "setColorFilter", 0xFF38BDF8);
                 mgr.partiallyUpdateAppWidget(idsFull, viewsFull);
             }
 
@@ -73,13 +75,16 @@ public class Sub2WidgetProvider extends AppWidgetProvider {
             if (idsLogs != null && idsLogs.length > 0) {
                 RemoteViews viewsLogs = new RemoteViews(context.getPackageName(), R.layout.widget_sub2_logs);
                 viewsLogs.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
+                viewsLogs.setInt(R.id.iv_status_dot, "setColorFilter", 0xFF38BDF8);
                 mgr.partiallyUpdateAppWidget(idsLogs, viewsLogs);
             }
+
             ComponentName cnLatency = new ComponentName(context, Sub2LatencyWidgetProvider.class);
             int[] idsLatency = mgr.getAppWidgetIds(cnLatency);
             if (idsLatency != null && idsLatency.length > 0) {
                 RemoteViews viewsLatency = new RemoteViews(context.getPackageName(), R.layout.widget_sub2_latency);
                 viewsLatency.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
+                viewsLatency.setInt(R.id.iv_status_dot, "setColorFilter", 0xFF38BDF8);
                 mgr.partiallyUpdateAppWidget(idsLatency, viewsLatency);
             }
 

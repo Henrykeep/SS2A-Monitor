@@ -47,6 +47,7 @@ public class Sub2FullStatsWidgetProvider extends AppWidgetProvider {
             if (ids != null && ids.length > 0) {
                 RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_sub2_full_stats);
                 views.setTextViewText(R.id.tv_update_time, "⚡ 同步中...");
+                views.setInt(R.id.iv_status_dot, "setColorFilter", 0xFF38BDF8);
                 mgr.partiallyUpdateAppWidget(ids, views);
             }
         }

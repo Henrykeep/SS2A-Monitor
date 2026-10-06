@@ -195,7 +195,7 @@
             <!-- 列 4：消费金额 (严格锁定 39dp 固定宽度，全行右对齐) -->
             <TextView
                 android:id="@+id/tv_log_duration_1"
-                android:layout_width="44dp"
+                android:layout_width="42dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="start|center_vertical"
@@ -212,7 +212,7 @@
             <!-- 列 5：时间戳 (严格锁定 40dp 固定宽度，带秒数 HH:mm:ss 完整显示，全行右对齐) -->
             <TextView
                 android:id="@+id/tv_log_time_1"
-                android:layout_width="40dp"
+                android:layout_width="42dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="end|center_vertical"
@@ -289,7 +289,7 @@
 
             <TextView
                 android:id="@+id/tv_log_duration_2"
-                android:layout_width="44dp"
+                android:layout_width="42dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="start|center_vertical"
@@ -305,7 +305,7 @@
 
             <TextView
                 android:id="@+id/tv_log_time_2"
-                android:layout_width="40dp"
+                android:layout_width="42dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="end|center_vertical"
@@ -382,7 +382,7 @@
 
             <TextView
                 android:id="@+id/tv_log_duration_3"
-                android:layout_width="44dp"
+                android:layout_width="42dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="start|center_vertical"
@@ -398,7 +398,7 @@
 
             <TextView
                 android:id="@+id/tv_log_time_3"
-                android:layout_width="40dp"
+                android:layout_width="42dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="end|center_vertical"
@@ -474,7 +474,7 @@
 
             <TextView
                 android:id="@+id/tv_log_duration_4"
-                android:layout_width="44dp"
+                android:layout_width="42dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="start|center_vertical"
@@ -490,7 +490,7 @@
 
             <TextView
                 android:id="@+id/tv_log_time_4"
-                android:layout_width="40dp"
+                android:layout_width="42dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="end|center_vertical"
