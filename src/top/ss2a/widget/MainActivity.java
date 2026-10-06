@@ -332,6 +332,7 @@ public class MainActivity extends Activity {
                                     Sub2WidgetProvider.updateAllWidgets(MainActivity.this, res);
                                     Sub2FullStatsWidgetProvider.updateAllWidgets(MainActivity.this, res);
                                     Sub2LogsWidgetProvider.updateAllWidgets(MainActivity.this, res, dataStore.getCachedRecentLogs());
+                                    Sub2LatencyWidgetProvider.updateAllWidgets(MainActivity.this, res, dataStore.getCachedRecentLogs());
                                     Sub2RealtimeService.start(MainActivity.this);
                                     Sub2RealtimeService.syncNow(MainActivity.this);
                                 } else {
@@ -410,6 +411,7 @@ Toast.makeText(MainActivity.this, "连接成功！已同步至桌面小组件", 
                                  Sub2WidgetProvider.updateAllWidgets(MainActivity.this, res);
                                  Sub2FullStatsWidgetProvider.updateAllWidgets(MainActivity.this, res);
                                  Sub2LogsWidgetProvider.updateAllWidgets(MainActivity.this, res, dataStore.getCachedRecentLogs());
+                                    Sub2LatencyWidgetProvider.updateAllWidgets(MainActivity.this, res, dataStore.getCachedRecentLogs());
                                  Sub2RealtimeService.start(MainActivity.this);
                                 Sub2RealtimeService.syncNow(MainActivity.this);
                             } else {
@@ -456,6 +458,7 @@ Toast.makeText(MainActivity.this, "连接成功！已同步至桌面小组件", 
         Sub2WidgetProvider.updateAllWidgets(this, cached);
         Sub2FullStatsWidgetProvider.updateAllWidgets(this, cached);
         Sub2LogsWidgetProvider.updateAllWidgets(this, cached, dataStore.getCachedRecentLogs());
+        Sub2LatencyWidgetProvider.updateAllWidgets(this, cached, dataStore.getCachedRecentLogs());
         Sub2RealtimeService.start(this);
         Sub2RealtimeService.syncNow(this);
         Sub2WidgetProvider.scheduleAutoAlarm(this);
