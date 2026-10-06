@@ -31,7 +31,7 @@ public class Sub2LogItem {
     public static String cleanModelName(String raw) {
         if (raw == null || raw.trim().isEmpty()) return "未知模型";
         String s = raw.trim();
-        int slashIdx = s.indexOf("/");
+        int slashIdx = s.lastIndexOf("/");
         if (slashIdx >= 0 && slashIdx < s.length() - 1) {
             s = s.substring(slashIdx + 1);
         }
