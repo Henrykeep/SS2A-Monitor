@@ -67,6 +67,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/tv_app_version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_pill_tag"
@@ -74,10 +75,11 @@
                 android:paddingTop="4dp"
                 android:paddingEnd="10dp"
                 android:paddingBottom="4dp"
-                android:text="v1.7.0"
+                android:text="v1.8.5"
                 android:textColor="#CBA6F7"
                 android:textSize="10.5sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:includeFontPadding="false" />
         </LinearLayout>
 
         <!-- 卡片 1：桌面组件实时效果预览 (1:1 动态看板) -->
@@ -791,12 +793,14 @@
                 android:textSize="11sp" />
 
             <TextView
+                android:id="@+id/tv_footer_github"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2.5dp"
-                android:text="GitHub: Henrykeep/SS2A-Monitor"
-                android:textColor="#334155"
-                android:textSize="10sp" />
+                android:text="GitHub: Henrykeep/SS2A-Monitor ↗"
+                android:textColor="#475569"
+                android:textSize="10sp"
+                android:padding="4dp" />
         </LinearLayout>
 
     </LinearLayout>

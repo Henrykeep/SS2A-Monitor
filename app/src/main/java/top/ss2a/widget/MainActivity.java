@@ -60,6 +60,13 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         dataStore = new WidgetDataStore(this);
+        try {
+            TextView tvVersion = findViewById(R.id.tv_app_version);
+            if (tvVersion != null) {
+                String vName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+                tvVersion.setText("v" + vName);
+            }
+        } catch (Exception ignored) {}
 
         etServerUrl = findViewById(R.id.et_server_url);
         etAdminAccount = findViewById(R.id.et_admin_account);
@@ -130,6 +137,19 @@ public class MainActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     openAppSettings();
+                }
+            });
+        }
+
+        View tvGithub = findViewById(R.id.tv_footer_github);
+        if (tvGithub != null) {
+            tvGithub.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Henrykeep/SS2A-Monitor"));
+                        startActivity(browserIntent);
+                    } catch (Exception ignored) {}
                 }
             });
         }
