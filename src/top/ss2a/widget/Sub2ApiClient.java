@@ -48,7 +48,9 @@ public class Sub2ApiClient {
         String loginUrl = baseUrl + "/api/v1/auth/login";
 
         JSONObject payload = new JSONObject();
-        payload.put("email", account.trim());
+        String acc = account.trim();
+        payload.put("email", acc);
+        payload.put("username", acc);
         payload.put("password", password);
         byte[] postBytes = payload.toString().getBytes(StandardCharsets.UTF_8);
 
@@ -129,9 +131,10 @@ public class Sub2ApiClient {
             }
         }
 
-        // 3. 如果报 403 (Admin access required)，说明此账号是普通用户或非站长权限，自动拉取用户个人仪表盘！
+        // 3. 如果报 403 (Admin access required) 或 404，说明此账号是普通用户或系统部署为非admin路由，自动优雅降级拉取个人仪表盘！
         boolean isForbidden = adminData.errorMessage != null && (
             adminData.errorMessage.contains("403") ||
+            adminData.errorMessage.contains("404") ||
             adminData.errorMessage.toLowerCase().contains("admin access") ||
             adminData.errorMessage.toLowerCase().contains("forbidden")
         );
@@ -177,15 +180,12 @@ public class Sub2ApiClient {
                 rawToken = rawToken.substring(7).trim();
             }
 
-            // 智能区分 Token 类型：
-            // JWT 通常由三部分以点分隔组成
+            // 智能兼容多种认证头格式：JWT Token、自定义 x-api-key 以及标准 Bearer
             boolean isJwt = rawToken.contains(".") && rawToken.split("\\.").length >= 3;
-            if (isJwt) {
-                conn.setRequestProperty("Authorization", "Bearer " + rawToken);
-            } else {
-                // Admin API Key 格式（非 JWT 格式的自定义 Key）
+            conn.setRequestProperty("Authorization", "Bearer " + rawToken);
+            if (!isJwt) {
                 conn.setRequestProperty("x-api-key", rawToken);
-                conn.setRequestProperty("Authorization", "Bearer " + rawToken);
+                conn.setRequestProperty("apikey", rawToken);
             }
 
             int code = conn.getResponseCode();
@@ -446,10 +446,13 @@ public class Sub2ApiClient {
     }
 
     private String formatLogTime(String isoTime) {
-        if (isoTime == null || isoTime.isEmpty()) return "--:--";
+        if (isoTime == null || isoTime.trim().isEmpty()) return "--:--";
         try {
-            // ISO 格式: 2026-10-05T19:49:41.625551+08:00
+            // 兼容 ISO 格式: 2026-10-05T19:49:41.625551+08:00 或带空格格式 2026-10-05 19:49:41
             int tIndex = isoTime.indexOf('T');
+            if (tIndex < 0) {
+                tIndex = isoTime.indexOf(' ');
+            }
             if (tIndex >= 0 && isoTime.length() >= tIndex + 9) {
                 return isoTime.substring(tIndex + 1, tIndex + 9);
             }
