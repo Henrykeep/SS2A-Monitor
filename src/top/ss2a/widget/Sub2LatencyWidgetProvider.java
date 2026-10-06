@@ -182,6 +182,10 @@ public class Sub2LatencyWidgetProvider extends AppWidgetProvider {
 
         // 点击交互跳转
         String baseUrl = Sub2ApiClient.cleanBaseUrl(store.getServerUrl());
+        boolean isAdmin = stats == null || "全站监控".equals(stats.modeTitle);
+        String adminHome = isAdmin ? baseUrl + "/admin" : baseUrl;
+        String logsUrl = isAdmin ? baseUrl + "/admin/logs" : baseUrl + "/usage/logs";
+        String accountsUrl = isAdmin ? baseUrl + "/admin/accounts" : baseUrl + "/usage";
 
         Intent refreshIntent = new Intent(context, Sub2WidgetProvider.class);
         refreshIntent.setAction(Sub2WidgetProvider.ACTION_MANUAL_REFRESH);
@@ -194,13 +198,13 @@ public class Sub2LatencyWidgetProvider extends AppWidgetProvider {
             context, 31, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.btn_settings, pSettings);
 
-        Intent openAccounts = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + "/admin/accounts"));
+        Intent openAccounts = new Intent(Intent.ACTION_VIEW, Uri.parse(accountsUrl));
         openAccounts.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pAccounts = PendingIntent.getActivity(
             context, 33, openAccounts, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.tv_top_account, pAccounts);
 
-        Intent openLogs = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + "/admin/logs"));
+        Intent openLogs = new Intent(Intent.ACTION_VIEW, Uri.parse(logsUrl));
         openLogs.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pLogs = PendingIntent.getActivity(
             context, 34, openLogs, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -208,13 +212,12 @@ public class Sub2LatencyWidgetProvider extends AppWidgetProvider {
             views.setOnClickPendingIntent(lId, pLogs);
         }
 
-        Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + "/admin"));
+        Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(adminHome));
         openWeb.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pWeb = PendingIntent.getActivity(
             context, 32, openWeb, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.tv_bottom_summary, pWeb);
         views.setOnClickPendingIntent(R.id.widget_container, pWeb);
-
         mgr.updateAppWidget(id, views);
     }
 }

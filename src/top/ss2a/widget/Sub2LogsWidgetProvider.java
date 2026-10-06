@@ -173,6 +173,10 @@ public class Sub2LogsWidgetProvider extends AppWidgetProvider {
 
         // ==================== 交互直达优化 ====================
         String baseUrl = Sub2ApiClient.cleanBaseUrl(store.getServerUrl());
+        boolean isAdmin = stats == null || "全站监控".equals(stats.modeTitle);
+        String adminHome = isAdmin ? baseUrl + "/admin" : baseUrl;
+        String logsUrl = isAdmin ? baseUrl + "/admin/logs" : baseUrl + "/usage/logs";
+        String accountsUrl = isAdmin ? baseUrl + "/admin/accounts" : baseUrl + "/usage";
 
         // 1. 点击刷新按钮
         Intent refreshIntent = new Intent(context, Sub2WidgetProvider.class);
@@ -188,14 +192,14 @@ public class Sub2LogsWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.btn_settings, pSettings);
 
         // 3. 点击顶部账户胶囊：直达中转后台「渠道与账号管理 (/admin/accounts)」
-        Intent openAccounts = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + "/admin/accounts"));
+        Intent openAccounts = new Intent(Intent.ACTION_VIEW, Uri.parse(accountsUrl));
         openAccounts.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pAccounts = PendingIntent.getActivity(
             context, 23, openAccounts, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.tv_top_account, pAccounts);
 
         // 4. 点击 4 条调用明细行：直达中转后台「调用日志与使用记录 (/admin/logs)」
-        Intent openLogs = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + "/admin/logs"));
+        Intent openLogs = new Intent(Intent.ACTION_VIEW, Uri.parse(logsUrl));
         openLogs.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pLogs = PendingIntent.getActivity(
             context, 24, openLogs, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -204,13 +208,12 @@ public class Sub2LogsWidgetProvider extends AppWidgetProvider {
         }
 
         // 5. 点击底部汇总简报及主体底板：直达中转站首页/控制台 (/admin)
-        Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + "/admin"));
+        Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(adminHome));
         openWeb.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pWeb = PendingIntent.getActivity(
             context, 22, openWeb, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.tv_bottom_summary, pWeb);
         views.setOnClickPendingIntent(R.id.widget_container, pWeb);
-
         mgr.updateAppWidget(id, views);
     }
 }

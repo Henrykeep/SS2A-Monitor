@@ -165,15 +165,38 @@ public class Sub2WidgetProvider extends AppWidgetProvider {
             context, 0, refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.btn_refresh, pRefresh);
 
-        String targetUrl = store.getServerUrl();
-        if ("全站监控".equals(data.modeTitle)) {
-            if (!targetUrl.endsWith("/admin")) targetUrl += "/admin";
-        }
-        Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl));
+        String baseUrl = Sub2ApiClient.cleanBaseUrl(store.getServerUrl());
+        boolean isAdmin = "全站监控".equals(data.modeTitle);
+        String adminHome = isAdmin ? baseUrl + "/admin" : baseUrl;
+        String logsUrl = isAdmin ? baseUrl + "/admin/logs" : baseUrl + "/usage/logs";
+        String accountsUrl = isAdmin ? baseUrl + "/admin/accounts" : baseUrl + "/usage";
+
+        // 1. 底栏与整卡主体：直达控制台首页
+        Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(adminHome));
         openWeb.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pWeb = PendingIntent.getActivity(
             context, 1, openWeb, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.widget_container, pWeb);
+        views.setOnClickPendingIntent(R.id.btn_enter_admin, pWeb);
+
+        // 2. 主卡片（今日总消耗）：直达中转后台日志明细
+        Intent openLogs = new Intent(Intent.ACTION_VIEW, Uri.parse(logsUrl));
+        openLogs.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pLogs = PendingIntent.getActivity(
+            context, 3, openLogs, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        views.setOnClickPendingIntent(R.id.card_today_cost, pLogs);
+
+        // 3. 上副卡（调用次数）：直达中转后台日志明细
+        PendingIntent pReqs = PendingIntent.getActivity(
+            context, 4, openLogs, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        views.setOnClickPendingIntent(R.id.card_today_requests, pReqs);
+
+        // 4. 下副卡（Token 吞吐量）：直达中转后台渠道/用量
+        Intent openAccounts = new Intent(Intent.ACTION_VIEW, Uri.parse(accountsUrl));
+        openAccounts.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pAccounts = PendingIntent.getActivity(
+            context, 5, openAccounts, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        views.setOnClickPendingIntent(R.id.card_today_tokens, pAccounts);
 
         Intent settingsIntent = new Intent(context, MainActivity.class);
         PendingIntent pSettings = PendingIntent.getActivity(

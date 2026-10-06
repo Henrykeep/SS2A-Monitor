@@ -111,16 +111,42 @@ public class Sub2FullStatsWidgetProvider extends AppWidgetProvider {
             context, 11, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.btn_settings, pSettings);
 
-        String targetUrl = store.getServerUrl();
-        if ("全站监控".equals(data.modeTitle)) {
-            if (!targetUrl.endsWith("/admin")) targetUrl += "/admin";
-        }
-        Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl));
+        String baseUrl = Sub2ApiClient.cleanBaseUrl(store.getServerUrl());
+        boolean isAdmin = "全站监控".equals(data.modeTitle);
+        String adminHome = isAdmin ? baseUrl + "/admin" : baseUrl;
+        String logsUrl = isAdmin ? baseUrl + "/admin/logs" : baseUrl + "/usage/logs";
+        String accountsUrl = isAdmin ? baseUrl + "/admin/accounts" : baseUrl + "/usage";
+        String keysUrl = isAdmin ? baseUrl + "/admin/keys" : baseUrl + "/tokens";
+
+        // 整卡底板与底栏进入后台微胶囊：直达中转站首页/控制台
+        Intent openWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(adminHome));
         openWeb.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pWeb = PendingIntent.getActivity(
             context, 12, openWeb, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.widget_container, pWeb);
+        views.setOnClickPendingIntent(R.id.btn_enter_admin, pWeb);
 
+        // 今日用量卡片：直达中转后台日志明细 (/admin/logs)
+        Intent openLogs = new Intent(Intent.ACTION_VIEW, Uri.parse(logsUrl));
+        openLogs.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pLogs = PendingIntent.getActivity(
+            context, 13, openLogs, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        views.setOnClickPendingIntent(R.id.card_today_section, pLogs);
+
+        // 累计全量卡片：直达中转后台日志明细 (/admin/logs)
+        views.setOnClickPendingIntent(R.id.card_total_section, pLogs);
+
+        // 药丸群 RPM / TPM / 延迟：直达中转后台日志明细 (/admin/logs)
+        views.setOnClickPendingIntent(R.id.tv_rpm, pLogs);
+        views.setOnClickPendingIntent(R.id.tv_tpm, pLogs);
+        views.setOnClickPendingIntent(R.id.tv_avg_duration, pLogs);
+
+        // 药丸群 Key 活跃数：直达中转后台密钥管理 (/admin/keys)
+        Intent openKeys = new Intent(Intent.ACTION_VIEW, Uri.parse(keysUrl));
+        openKeys.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pKeys = PendingIntent.getActivity(
+            context, 14, openKeys, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        views.setOnClickPendingIntent(R.id.tv_active_keys, pKeys);
         mgr.updateAppWidget(id, views);
     }
 }
