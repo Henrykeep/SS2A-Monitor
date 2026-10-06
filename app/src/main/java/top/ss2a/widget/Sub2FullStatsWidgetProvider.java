@@ -50,6 +50,8 @@ public class Sub2FullStatsWidgetProvider extends AppWidgetProvider {
                 views.setInt(R.id.iv_status_dot, "setColorFilter", 0xFF38BDF8);
                 mgr.partiallyUpdateAppWidget(ids, views);
             }
+            Sub2RealtimeService.start(context);
+            Sub2RealtimeService.syncNow(context);
         }
     }
 
