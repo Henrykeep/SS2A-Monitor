@@ -9,6 +9,7 @@ gen/
 *.class
 
 # IDE & System
+local.properties
 .idea/
 *.iml
 .vscode/

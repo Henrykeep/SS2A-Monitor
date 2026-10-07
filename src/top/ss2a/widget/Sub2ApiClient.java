@@ -34,6 +34,10 @@ public class Sub2ApiClient {
             url = url.substring(0, url.length() - "/api/v1".length());
         } else if (url.endsWith("/admin")) {
             url = url.substring(0, url.length() - "/admin".length());
+        } else if (url.endsWith("/dashboard")) {
+            url = url.substring(0, url.length() - "/dashboard".length());
+        } else if (url.endsWith("/usage")) {
+            url = url.substring(0, url.length() - "/usage".length());
         }
         while (url.endsWith("/")) {
             url = url.substring(0, url.length() - 1);
@@ -66,6 +70,8 @@ public class Sub2ApiClient {
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Accept-Encoding", "gzip");
+            conn.setRequestProperty("User-Agent", "SS2A-Monitor/1.9.6 (Android)");
+            conn.setRequestProperty("Connection", "keep-alive");
 
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(postBytes);
@@ -177,6 +183,8 @@ public class Sub2ApiClient {
             conn.setReadTimeout(10000);
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Accept-Encoding", "gzip");
+            conn.setRequestProperty("User-Agent", "SS2A-Monitor/1.9.6 (Android)");
+            conn.setRequestProperty("Connection", "keep-alive");
 
             String rawToken = token.trim();
             if (rawToken.startsWith("Bearer ")) {
@@ -383,6 +391,8 @@ public class Sub2ApiClient {
             conn.setReadTimeout(8000);
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Accept-Encoding", "gzip");
+            conn.setRequestProperty("User-Agent", "SS2A-Monitor/1.9.6 (Android)");
+            conn.setRequestProperty("Connection", "keep-alive");
 
             String rawToken = token.trim();
             if (rawToken.startsWith("Bearer ")) {

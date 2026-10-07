@@ -62,7 +62,11 @@ public class Sub2RealtimeService extends Service {
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_USER_PRESENT);
-        registerReceiver(screenReceiver, filter);
+        if (Build.VERSION.SDK_INT >= 33) {
+            registerReceiver(screenReceiver, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(screenReceiver, filter);
+        }
 
         startPollingLoop();
     }
@@ -215,7 +219,11 @@ public class Sub2RealtimeService extends Service {
 
     private void startForegroundNotification(String text) {
         Notification notification = buildNotification(text);
-        startForeground(NOTIFICATION_ID, notification);
+        if (Build.VERSION.SDK_INT >= 29) {
+            startForeground(NOTIFICATION_ID, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
+        } else {
+            startForeground(NOTIFICATION_ID, notification);
+        }
     }
 
     private void updateForegroundNotification(String text) {
