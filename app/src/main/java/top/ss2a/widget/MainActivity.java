@@ -281,7 +281,6 @@ public class MainActivity extends Activity {
         final String rawUrl = etServerUrl.getText().toString().trim();
         final String account = etAdminAccount.getText().toString().trim();
         final String password = etAdminPassword.getText().toString().trim();
-
         if (rawUrl.isEmpty()) {
             Toast.makeText(this, "请输入服务器地址", Toast.LENGTH_SHORT).show();
             return;
@@ -290,19 +289,65 @@ public class MainActivity extends Activity {
             Toast.makeText(this, "请输入账号邮箱和密码", Toast.LENGTH_SHORT).show();
             return;
         }
-
         saveIntervalFromInput();
         final String cleanUrl = Sub2ApiClient.cleanBaseUrl(rawUrl);
         etServerUrl.setText(cleanUrl);
         dataStore.setServerUrl(cleanUrl);
         dataStore.setAdminAccount(account);
         dataStore.setAdminPassword(password);
+        progressBar.setVisibility(View.VISIBLE);
+        tvTestResult.setVisibility(View.VISIBLE);
+        tvTestResult.setTextColor(Color.parseColor("#BAC2DE"));
+        tvTestResult.setText("正在检查站点人机验证...");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String siteKey = "";
+                boolean turnstileRequired = false;
+                try {
+                    org.json.JSONObject cfg = Sub2ApiClient.fetchPublicSettings(cleanUrl);
+                    if (cfg != null) {
+                        turnstileRequired = cfg.optBoolean("turnstile_enabled", false);
+                        siteKey = cfg.optString("turnstile_site_key", "");
+                    }
+                } catch (Exception ignored) {}
+                final boolean needTurnstile = turnstileRequired && siteKey != null && !siteKey.trim().isEmpty();
+                final String finalSiteKey = siteKey;
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (needTurnstile) {
+                            tvTestResult.setText("站点已开启 Turnstile，请先完成人机验证");
+                            TurnstileDialog.show(MainActivity.this, finalSiteKey, new TurnstileDialog.Callback() {
+                                @Override
+                                public void onVerified(String token) {
+                                    dataStore.setTurnstileToken(token);
+                                    startLoginRequest();
+                                }
+                                @Override
+                                public void onCancelled(String reason) {
+                                    progressBar.setVisibility(View.GONE);
+                                    tvTestResult.setTextColor(Color.parseColor("#F87171"));
+                                    tvTestResult.setText("登录已取消: " + reason);
+                                }
+                            });
+                        } else {
+                            dataStore.setTurnstileToken("");
+                            startLoginRequest();
+                        }
+                    }
+                });
+            }
+        }).start();
+    }
 
+    private void startLoginRequest() {
+        final String account = etAdminAccount.getText().toString().trim();
+        final String password = etAdminPassword.getText().toString().trim();
         progressBar.setVisibility(View.VISIBLE);
         tvTestResult.setVisibility(View.VISIBLE);
         tvTestResult.setTextColor(Color.parseColor("#BAC2DE"));
         tvTestResult.setText("正在向服务器登录验证并获取 Token...");
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -314,7 +359,6 @@ public class MainActivity extends Activity {
                     if (freshLogs != null && !freshLogs.isEmpty()) {
                         dataStore.saveRecentLogs(freshLogs);
                     }
-
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -357,8 +401,13 @@ public class MainActivity extends Activity {
                         public void run() {
                             progressBar.setVisibility(View.GONE);
                             tvTestResult.setTextColor(Color.parseColor("#F87171"));
-                            tvTestResult.setText("登录失败: " + e.getMessage());
-                            Toast.makeText(MainActivity.this, "登录失败: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            String msg = e.getMessage() != null ? e.getMessage() : "未知错误";
+                            if (msg.toLowerCase().contains("turnstile")) {
+                                dataStore.setTurnstileToken("");
+                                msg = msg + "。请重新点击登录并完成人机验证";
+                            }
+                            tvTestResult.setText("登录失败: " + msg);
+                            Toast.makeText(MainActivity.this, "登录失败: " + msg, Toast.LENGTH_LONG).show();
                         }
                     });
                 }

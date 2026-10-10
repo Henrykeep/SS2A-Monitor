@@ -53,6 +53,10 @@ public class Sub2ApiClient {
         payload.put("email", acc);
         payload.put("username", acc);
         payload.put("password", password);
+        String turnstile = dataStore.getTurnstileToken();
+        if (turnstile != null && !turnstile.trim().isEmpty()) {
+            payload.put("turnstile_token", turnstile.trim());
+        }
         byte[] postBytes = payload.toString().getBytes(StandardCharsets.UTF_8);
 
         HttpURLConnection conn = null;
@@ -66,6 +70,7 @@ public class Sub2ApiClient {
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Accept-Encoding", "gzip");
+            conn.setRequestProperty("User-Agent", "SS2A-Monitor/1.9.6");
 
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(postBytes);
@@ -549,4 +554,38 @@ public class Sub2ApiClient {
         } catch (Exception ignored) {}
         return raw;
     }
+
+    public static org.json.JSONObject fetchPublicSettings(String baseUrl) {
+        HttpURLConnection conn = null;
+        try {
+            String clean = cleanBaseUrl(baseUrl);
+            URL url = new URL(clean + "/api/v1/settings/public");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(8000);
+            conn.setReadTimeout(8000);
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("User-Agent", "SS2A-Monitor/1.9.6");
+            int code = conn.getResponseCode();
+            InputStream is = (code >= 200 && code < 300) ? conn.getInputStream() : conn.getErrorStream();
+            String body = "";
+            if (is != null) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) sb.append(line);
+                reader.close();
+                body = sb.toString();
+            }
+            if (code < 200 || code >= 300 || body.isEmpty()) return null;
+            org.json.JSONObject root = new org.json.JSONObject(body);
+            org.json.JSONObject data = root.optJSONObject("data");
+            return data != null ? data : root;
+        } catch (Exception ignored) {
+            return null;
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
 }

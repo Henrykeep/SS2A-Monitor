@@ -48,6 +48,18 @@ public class WidgetDataStore {
     public void setAdminPassword(String password) {
         prefs.edit().putString("admin_password", password != null ? password : "").apply();
     }
+    public String getTurnstileSiteKey() {
+        return prefs.getString("turnstile_site_key", "");
+    }
+    public void setTurnstileSiteKey(String key) {
+        prefs.edit().putString("turnstile_site_key", key != null ? key.trim() : "").apply();
+    }
+    public String getTurnstileToken() {
+        return prefs.getString("turnstile_token", "");
+    }
+    public void setTurnstileToken(String token) {
+        prefs.edit().putString("turnstile_token", token != null ? token.trim() : "").apply();
+    }
 
     // 真正展示的上游账户名，例如 gugugaga, K 等
     public String getTargetAccountName() {
